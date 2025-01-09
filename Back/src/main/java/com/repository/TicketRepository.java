@@ -1,15 +1,13 @@
 package com.repository;
 
+import com.models.Ticket;
+
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.models.ERole;
-import com.models.Role;
-
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Long> {
-  Optional<Role> findByName(ERole name);
+public interface TicketRepository extends JpaRepository<Ticket, Long> {
+    Optional<Ticket> findById(Long id);
 }
-
