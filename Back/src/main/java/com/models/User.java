@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -53,6 +54,12 @@ public class User {
   @OneToOne(cascade = CascadeType.ALL) 
   @JoinColumn(name = "box", referencedColumnName = "id") 
   private Box box;
+
+  @OneToMany(mappedBy = "profesional")
+  private Set<AsistenciaMedica> asistenciasMedicas;
+
+  @OneToMany(mappedBy = "profesional")
+  private Set<Cita> citas;
 
   public User() {
   }
@@ -109,6 +116,14 @@ public class User {
 
   public void setBox(Box box){
     this.box = box;
+  }
+
+  public Set<AsistenciaMedica> getAistAsistenciaMedicas(){
+    return asistenciasMedicas;
+  }
+
+  public void setAsistenciasMedicas(Set<AsistenciaMedica> asistenciasMedicas){
+    this.asistenciasMedicas = asistenciasMedicas;
   }
 
 }
