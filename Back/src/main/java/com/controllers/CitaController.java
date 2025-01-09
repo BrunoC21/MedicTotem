@@ -25,4 +25,7 @@ public class CitaController {
     public List<Cita> listaTodasCitas(){
         return cita.findAll();
     }
+
+
+
 }

@@ -94,5 +94,12 @@ public class Cita {
         this.sector = sector;
     }
 
+    public User getProfesional() {
+        return profesional;
+    }
+
+    public void setProfesional(User profesional) {
+        this.profesional = profesional;
+    }
     
 }
