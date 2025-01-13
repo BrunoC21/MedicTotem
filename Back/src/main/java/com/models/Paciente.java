@@ -1,7 +1,16 @@
 package com.models;
 
-import jakarta.persistence.*;
 import java.util.List;
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "paciente")
@@ -11,38 +20,46 @@ public class Paciente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "rut", nullable = false, length = 20)
+    @Column(name = "rut")
     private String rut;
 
-    @Column(name = "dv", nullable = false, length = 1)
+    @Column(name = "dv")
     private String dv;
 
-    @Column(name = "nombre", nullable = false, length = 50)
+    @Column(name = "nombre")
     private String nombre;
 
-    @Column(name = "apellido", nullable = false, length = 50)
-    private String apellido;
+    @Column(name = "apellidoPaterno")
+    private String apellidoPaterno;
 
-    @Column(name = "sexo", nullable = false, length = 10)
+    @Column(name = "apellidoMaterno")
+    private String apellidoMaterno;
+
+    @Column(name = "sexo")
     private String sexo;
 
-    @Column(name = "direccion", nullable = false, length = 100)
+    @Column(name = "direccion")
     private String direccion;
 
+    @OneToMany(mappedBy = "", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Cita> citas;
+
     @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CitaSimple> citas;
+    private List<CitaSimple> citasSimples;
 
     
 
     public Paciente() {
     }
 
-    public Paciente(Long id, String rut, String dv, String nombre, String apellido, String sexo, String direccion) {
+    public Paciente(Long id, String rut, String dv, String nombre, String apellidoPaterno, 
+                        String apellidoMaterno, String sexo, String direccion) {
         this.id = id;
         this.rut = rut;
         this.dv = dv;
         this.nombre = nombre;
-        this.apellido = apellido;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
         this.sexo = sexo;
         this.direccion = direccion;
     }
@@ -80,11 +97,19 @@ public class Paciente {
     }
 
     public String getApellido() {
-        return apellido;
+        return apellidoPaterno;
     }
 
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
+    public void setApellido(String apellidoPaterno) {
+        this.apellidoPaterno = apellidoPaterno;
+    }
+
+    public String getApellidoMaterno(){
+        return apellidoMaterno;
+    }
+
+    public void setApellidoMaterno(String apellidoMaterno){
+        this.apellidoMaterno = apellidoMaterno;
     }
 
     public String getSexo() {
@@ -104,10 +129,10 @@ public class Paciente {
     }
 
     public List<CitaSimple> getCitas() {
-        return citas;
+        return citasSimples;
     }
 
     public void setCitas(List<CitaSimple> citas) {
-        this.citas = citas;
+        this.citasSimples = citas;
     }
 }

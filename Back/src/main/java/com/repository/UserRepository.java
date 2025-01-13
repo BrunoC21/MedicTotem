@@ -11,6 +11,8 @@ import com.models.User;
 public interface UserRepository extends JpaRepository<User, Long> {
   Optional<User> findById(Long id);
 
+  User findByRut(String rut);
+
   Optional<User> findByUsername(String username);
 
   Boolean existsByUsername(String username);
