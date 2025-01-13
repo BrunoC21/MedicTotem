@@ -29,7 +29,7 @@ public class CitaController {
     private PacienteRepository pacienteRepository;
 
     @GetMapping("/all")
-   
+    
     public ResponseEntity<List<Map<String, Object>>> getAllCitas() {
         try {
             List<Cita> citas = citaRepository.findAll();
@@ -55,7 +55,7 @@ public class CitaController {
     }
 
     @GetMapping("/paciente/{rut}")
-
+  
     public ResponseEntity<Map<String, Object>> getCitasPaciente(@PathVariable String rut) {
         try {
             Optional<Paciente> paciente = pacienteRepository.findByRut(rut);
@@ -92,6 +92,7 @@ public class CitaController {
     }
 
     @GetMapping("/profesional/{username}")
+   
     public ResponseEntity<Map<String, Object>> getCitasProfesional(@PathVariable String username) {
         try {
             List<Cita> citas = citaRepository.findByProfesionalUsername(username);
