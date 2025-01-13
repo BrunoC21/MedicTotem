@@ -39,6 +39,10 @@ public class Cita {
     @JoinColumn(name = "profesional_id")
     private User profesional;
 
+    @ManyToOne
+    @JoinColumn(name = "paciente_rut", referencedColumnName = "rut")
+    private Paciente paciente;
+
     public Cita() {
     }
 
@@ -100,6 +104,14 @@ public class Cita {
 
     public void setProfesional(User profesional) {
         this.profesional = profesional;
+    }
+
+    public Paciente getPaciente() {
+        return paciente;
+    }
+
+    public void setPaciente(Paciente paciente) {
+        this.paciente = paciente;
     }
     
 }

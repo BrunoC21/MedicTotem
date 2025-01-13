@@ -1,14 +1,16 @@
 package com.repository;
 
-import java.util.Optional;
-
+import com.models.Cita;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.models.Cita; 
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CitaRepository extends JpaRepository<Cita, Long> {
     Optional<Cita> findById(Long id);
+
+   List<Cita> findByPacienteRut(String rut);
+    List<Cita> findByProfesionalUsername(String username);
     
 }

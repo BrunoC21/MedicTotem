@@ -32,6 +32,8 @@ public class Paciente {
     @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CitaSimple> citas;
 
+    
+
     public Paciente() {
     }
 
