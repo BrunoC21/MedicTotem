@@ -3,7 +3,6 @@ package com.controllers;
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +23,6 @@ public class CitaController {
     private final CitaRepository cita;
     private final CitaService citaService;
 
-    @Autowired
     public CitaController(CitaRepository cita, CitaService citaService) {
         this.cita = cita;
         this.citaService = citaService;

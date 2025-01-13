@@ -1,7 +1,7 @@
 package com.models;
 
 import java.sql.Time;
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +30,7 @@ public class Cita {
     private Time horaCita;
 
     @Column(name = "fecha_cita")
-    private Date fechaCita;
+    private LocalDate fechaCita;
 
     @Column(name = "sector")
     private String sector;
@@ -39,15 +39,22 @@ public class Cita {
     @JoinColumn(name = "profesional_id")
     private User profesional;
 
+    @ManyToOne
+    @JoinColumn(name = "paciente_id")
+    private Paciente paciente;
+
     public Cita() {
     }
 
-    public Cita(String estado, String tipoAtencion, Time horaCita, Date fechaCita, String sector) {
+    public Cita(String estado, String tipoAtencion, Time horaCita, 
+                    LocalDate fechaCita, String sector, User profesional, Paciente paciente) {
         this.estado = estado;
         this.tipoAtencion = tipoAtencion;
         this.horaCita = horaCita;
         this.fechaCita = fechaCita;
         this.sector = sector;
+        this.profesional = profesional;
+        this.paciente = paciente;
     }
 
     public Long getId() {
@@ -78,11 +85,11 @@ public class Cita {
         this.horaCita = horaCita;
     }
 
-    public Date getFechaCita() {
+    public LocalDate getFechaCita() {
         return fechaCita;
     }
 
-    public void setFechaCita(Date fechaCita) {
+    public void setFechaCita(LocalDate fechaCita) {
         this.fechaCita = fechaCita;
     }
 
@@ -100,6 +107,14 @@ public class Cita {
 
     public void setProfesional(User profesional) {
         this.profesional = profesional;
+    }
+
+    public Paciente getPaciente() {
+        return paciente;
+    }
+
+    public void setPaciente(Paciente paciente){
+        this.paciente = paciente;   
     }
     
 }

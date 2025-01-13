@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -44,6 +45,18 @@ public class User {
   @NotBlank
   @Size(max = 120)
   private String password;
+
+  @Column(name = "rut")
+  private String rut;
+
+  @Column(name = "nombre")
+  private String nombre;
+
+  @Column(name = "apellido")
+  private String apellido;
+
+  @Column(name = "direccion")
+  private String direccion;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "user_roles", 
@@ -108,6 +121,38 @@ public class User {
 
   public void setRoles(Set<Role> roles) {
     this.roles = roles;
+  }
+
+  public String getRut(){
+    return rut;
+  }
+
+  public void setRut(String rut){
+    this.rut = rut;
+  }
+
+  public String getNombre(){
+    return nombre;
+  }
+
+  public void setNombre(String nombre){
+    this.nombre = nombre;
+  }
+
+  public String getApellido(){
+    return apellido;
+  }
+
+  public void setApellido(String apellido){
+    this.apellido = apellido;
+  }
+
+  public String getDireccion(){
+    return direccion;
+  }
+
+  public void setDireccion(String direccion){
+    this.direccion = direccion;
   }
 
   public Box getBox(){
