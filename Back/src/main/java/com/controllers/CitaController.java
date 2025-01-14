@@ -3,9 +3,11 @@ package com.controllers;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.models.Cita;
+import com.models.Paciente;
 import com.repository.CitaRepository;
 import com.repository.PacienteRepository;
 import com.service.CitaService;
@@ -46,73 +49,87 @@ public class CitaController {
     }
 
     // Nuevo endpoint para listar citas por rut de paciente
-    @GetMapping("/paciente/{rut}")
-    public ResponseEntity<?> getCitasByPacienteRut(@PathVariable String rut) {
-        List<Cita> citas = citaRepository.findByPaciente_Rut(rut);
-        if (citas.isEmpty()) {
-            return new ResponseEntity<>(
-                "No se encontraron citas para el paciente con RUT: " + rut, 
-                HttpStatus.NOT_FOUND);
+    @GetMapping("/paciente/buscar/{rut}")
+  
+    public ResponseEntity<Map<String, Object>> buscarPaciente(@PathVariable String rut) {
+        try {
+            Optional<Paciente> paciente = pacienteRepository.findByRut(rut);
+            if (!paciente.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            Map<String, Object> pacienteInfo = new HashMap<>();
+            pacienteInfo.put("rut", paciente.get().getRut());
+            pacienteInfo.put("nombre", paciente.get().getNombre());
+            pacienteInfo.put("apellido", paciente.get().getApellido());
+            pacienteInfo.put("sexo", paciente.get().getSexo());
+            pacienteInfo.put("direccion", paciente.get().getDireccion());
+
+            List<Cita> citasPaciente = citaRepository.findByPaciente_Rut(rut);
+            List<Map<String, Object>> citasInfo = citasPaciente.stream()
+                .map(cita -> {
+                    Map<String, Object> citaMap = new HashMap<>();
+                    citaMap.put("fecha", cita.getFechaCita());
+                    citaMap.put("hora", cita.getHoraCita());
+                    citaMap.put("estado", cita.getEstado());
+                    citaMap.put("profesional", cita.getProfesional().getUsername());
+                    citaMap.put("sector", cita.getSector());
+                    return citaMap;
+                })
+                .collect(Collectors.toList());
+
+            response.put("paciente", pacienteInfo);
+            response.put("citas", citasInfo);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        Map<String, Object> response = new HashMap<>();
-        List<Map<String, Object>> citasFormateadas = citas.stream()
-            .map(cita -> {
-                Map<String, Object> citaMap = new HashMap<>();
-                citaMap.put("fecha", cita.getFechaCita());
-                citaMap.put("hora", cita.getHoraCita());
-                citaMap.put("nombreMedico", cita.getProfesional().getNombre());
-                citaMap.put("tipoCita", cita.getTipoAtencion());
-                citaMap.put("box", cita.getId());
-                citaMap.put("nombrePaciente", cita.getPaciente().getNombre());
-                citaMap.put("apellidoPaciente", cita.getPaciente().getApellido());
-                citaMap.put("estado", cita.getEstado());
-                return citaMap;
-            })
-            .collect(Collectors.toList());
-
-        if (!citasFormateadas.isEmpty()) {
-            Map<String, Object> primeraCita = citasFormateadas.get(0);
-            response.put("nombrePaciente", primeraCita.get("nombrePaciente"));
-            response.put("apellidoPaciente", primeraCita.get("apellidoPaciente"));
-            response.put("citas", citasFormateadas);
-        }
-
-        return ResponseEntity.ok(response);
     }
 
     // Nuevo endpoint para listar citas por username del profesional
-    @GetMapping("/profesional/{username}")
-    public ResponseEntity<?> getCitasByProfesionalUsername(@PathVariable String username) {
-        List<Cita> citas = citaRepository.findByProfesional_Username(username);
-        if (citas.isEmpty()) {
-            return new ResponseEntity<>(
-                "No se encontraron citas para el profesional: " + username, 
-                HttpStatus.NOT_FOUND);
+    @GetMapping("/profesional/buscar/{username}")
+
+    public ResponseEntity<Map<String, Object>> buscarProfesional(@PathVariable String username) {
+    try {
+        List<Cita> citasProfesional = citaRepository.findByProfesional_Username(username);
+        if (citasProfesional.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        // Obtener información del profesional de la primera cita
+        User profesional = (User) citasProfesional.get(0).getProfesional();
         Map<String, Object> response = new HashMap<>();
-        List<Map<String, Object>> citasFormateadas = citas.stream()
+        Map<String, Object> profesionalInfo = new HashMap<>();
+        profesionalInfo.put("username", profesional.getUsername());
+        profesionalInfo.put("email", ((com.models.User) profesional).getEmail());
+        profesionalInfo.put("nombre", profesional.getName());
+        profesionalInfo.put("sector", citasProfesional.get(0).getSector());
+
+        // Mapear las citas del profesional
+        List<Map<String, Object>> citasInfo = citasProfesional.stream()
             .map(cita -> {
                 Map<String, Object> citaMap = new HashMap<>();
-                citaMap.put("nombreMedico", cita.getProfesional().getNombre());
+                citaMap.put("id", cita.getId());
                 citaMap.put("fecha", cita.getFechaCita());
                 citaMap.put("hora", cita.getHoraCita());
-                citaMap.put("pacienteNombre", cita.getPaciente().getNombre());
-                citaMap.put("pacienteRut", cita.getPaciente().getRut());
                 citaMap.put("estado", cita.getEstado());
+                citaMap.put("paciente", cita.getPaciente().getNombre() + " " + 
+                           cita.getPaciente().getApellido());
+                citaMap.put("rutPaciente", cita.getPaciente().getRut());
+                citaMap.put("tipoAtencion", cita.getTipoAtencion());
+                citaMap.put("sector", cita.getSector());
                 return citaMap;
             })
             .collect(Collectors.toList());
 
-        if (!citasFormateadas.isEmpty()) {
-            response.put("nombreMedico", citasFormateadas.get(0).get("nombreMedico"));
-            response.put("especialidad", citasFormateadas.get(0).get("especialidad"));
-            response.put("citas", citasFormateadas);
-        }
-
-        return ResponseEntity.ok(response);
+        response.put("profesional", profesionalInfo);
+        response.put("citas", citasInfo);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (Exception e) {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+}
 
     // Endpoint existente para cargar datos
     @PostMapping("/cargar")
