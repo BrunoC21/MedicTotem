@@ -89,45 +89,64 @@ public class CitaController {
 
     // Nuevo endpoint para listar citas por username del profesional
     @GetMapping("/profesional/buscar/{username}")
-
-    public ResponseEntity<Map<String, Object>> buscarProfesional(@PathVariable String username) {
-    try {
+    public ResponseEntity<?> buscarProfesional(@PathVariable String username) {
+        try {
         List<Cita> citasProfesional = citaRepository.findByProfesional_Username(username);
         if (citasProfesional.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("No se encontraron citas para el profesional: " + username);
         }
 
         // Obtener información del profesional de la primera cita
-        User profesional = (User) citasProfesional.get(0).getProfesional();
+        com.models.User profesional = citasProfesional.get(0).getProfesional();
+        if (profesional == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("No se encontró información del profesional");
+        }
+
         Map<String, Object> response = new HashMap<>();
         Map<String, Object> profesionalInfo = new HashMap<>();
-        profesionalInfo.put("username", profesional.getUsername());
-        profesionalInfo.put("email", ((com.models.User) profesional).getEmail());
-        profesionalInfo.put("nombre", profesional.getName());
-        profesionalInfo.put("sector", citasProfesional.get(0).getSector());
+        
+        try {
+            profesionalInfo.put("username", profesional.getUsername());
+            profesionalInfo.put("email", profesional.getEmail());
+            profesionalInfo.put("nombre", profesional.getNombre());
+            profesionalInfo.put("sector", citasProfesional.get(0).getSector());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al obtener datos del profesional: " + e.getMessage());
+        }
 
-        // Mapear las citas del profesional
+        // Mapear las citas del profesional con validación
         List<Map<String, Object>> citasInfo = citasProfesional.stream()
+            .filter(cita -> cita.getPaciente() != null)
             .map(cita -> {
                 Map<String, Object> citaMap = new HashMap<>();
-                citaMap.put("id", cita.getId());
-                citaMap.put("fecha", cita.getFechaCita());
-                citaMap.put("hora", cita.getHoraCita());
-                citaMap.put("estado", cita.getEstado());
-                citaMap.put("paciente", cita.getPaciente().getNombre() + " " + 
-                           cita.getPaciente().getApellido());
-                citaMap.put("rutPaciente", cita.getPaciente().getRut());
-                citaMap.put("tipoAtencion", cita.getTipoAtencion());
-                citaMap.put("sector", cita.getSector());
+                try {
+                    citaMap.put("id", cita.getId());
+                    citaMap.put("fecha", cita.getFechaCita());
+                    citaMap.put("hora", cita.getHoraCita());
+                    citaMap.put("estado", cita.getEstado());
+                    citaMap.put("paciente", cita.getPaciente().getNombre() + " " + 
+                               cita.getPaciente().getApellido());
+                    citaMap.put("rutPaciente", cita.getPaciente().getRut());
+                    citaMap.put("tipoAtencion", cita.getTipoAtencion());
+                    citaMap.put("sector", cita.getSector());
+                } catch (Exception e) {
+                    System.out.println("Error al mapear cita: " + e.getMessage());
+                }
                 return citaMap;
             })
             .collect(Collectors.toList());
 
         response.put("profesional", profesionalInfo);
         response.put("citas", citasInfo);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(response);
+        
     } catch (Exception e) {
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error del servidor: " + e.getMessage());
     }
 }
 
