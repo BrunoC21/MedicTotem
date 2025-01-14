@@ -50,7 +50,6 @@ public class CitaController {
 
     // Nuevo endpoint para listar citas por rut de paciente
     @GetMapping("/paciente/buscar/{rut}")
-  
     public ResponseEntity<Map<String, Object>> buscarPaciente(@PathVariable String rut) {
         try {
             Optional<Paciente> paciente = pacienteRepository.findByRut(rut);
@@ -73,8 +72,11 @@ public class CitaController {
                     citaMap.put("fecha", cita.getFechaCita());
                     citaMap.put("hora", cita.getHoraCita());
                     citaMap.put("estado", cita.getEstado());
-                    citaMap.put("profesional", cita.getProfesional().getUsername());
+                    citaMap.put("nombreMedico", cita.getProfesional().getNombre());
+                    citaMap.put("especialidad", cita.getProfesional().getEspecialidad());
                     citaMap.put("sector", cita.getSector());
+                    citaMap.put("box", cita.getBox());
+                    citaMap.put("tipoAtencion", cita.getTipoAtencion());
                     return citaMap;
                 })
                 .collect(Collectors.toList());
@@ -83,6 +85,7 @@ public class CitaController {
             response.put("citas", citasInfo);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
