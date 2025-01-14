@@ -171,4 +171,9 @@ public class User {
     this.asistenciasMedicas = asistenciasMedicas;
   }
 
+public Object getEspecialidad() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getEspecialidad'");
+}
+
 }
