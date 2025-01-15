@@ -11,7 +11,7 @@ import com.models.Cita;
 @Repository
 public interface CitaRepository extends JpaRepository<Cita, Long> {
     Optional<Cita> findById(Long id);
-    List<Cita> findByProfesional_Username(String username);
-    List<Cita> findByPaciente_Rut(String rut);
+
+    List<Cita> findByPacienteRutAndSector(String rut, String Sector);
     
 }

@@ -116,10 +116,5 @@ public class Cita {
     public void setPaciente(Paciente paciente){
         this.paciente = paciente;   
     }
-
-    public Object getBox() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBox'");
-    }
     
 }
