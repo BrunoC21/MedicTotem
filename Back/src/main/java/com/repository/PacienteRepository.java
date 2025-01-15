@@ -10,6 +10,7 @@ import com.models.Paciente;
 @Repository
 public interface PacienteRepository extends JpaRepository<Paciente, Long> {
     Optional<Paciente> findById(Long id);
-    Optional<Paciente> findByRut(String rut);
-    
+
+    Paciente findByRut(String rut);
+
 }

@@ -22,7 +22,7 @@ import com.repository.PacienteRepository;
 import com.repository.UserRepository;
 
 @Service
-public class CitaService {
+public class ExcelService {
 
     @Autowired
     private CitaRepository citaRepository;
