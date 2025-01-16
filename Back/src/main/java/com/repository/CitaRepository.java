@@ -13,5 +13,6 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
     Optional<Cita> findById(Long id);
 
     List<Cita> findByPacienteRutAndSector(String rut, String Sector);
-    
+    List<Cita> findByPacienteRut(String rut);
+    List<Cita> findByProfesionalId(Long id);
 }
