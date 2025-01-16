@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,28 +32,26 @@ public class CitaController {
         this.excelService = excelService;
     }
 
+    //Obtener todas las citas
     @GetMapping("/all")
     public List<Cita> listaTodosBox() {
         return citaRepository.findAll();
     }
 
+    //Obtener una cita por su rut del paciente
+    @GetMapping("/paciente/{rutPaciente}")
+    public ResponseEntity<List<Cita>> getCitasByPaciente(@PathVariable String rutPaciente) {
+        List<Cita> citasPaciente = citaRepository.findByPacienteRut(rutPaciente);
+        return ResponseEntity.ok(citasPaciente);
+    }
+
+    //Obtener una cita por su rut del paciente y sector de la cita
     @GetMapping("/paciente/{rut}/{sector}")
-        public List<Cita> obtenerCitasPorRutPaciente(@PathVariable String rut, @PathVariable String sector) {
+    public List<Cita> obtenerCitasPorRutPaciente(@PathVariable String rut, @PathVariable String sector) {
         return citaRepository.findByPacienteRutAndSector(rut, "Sector " + sector);
     }
 
-    //Metodo para cargar datos de pacientes y de citas desde un archivo excel
-    @PostMapping("/cargar")
-    public String cargarDatosDesdeExcel(@RequestParam("file") MultipartFile file) {
-        try {
-            excelService.cargarDatosDesdeExcel(file.getInputStream());
-            return "Datos cargados exitosamente";
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Error al cargar los datos";
-        }
-    }
-
+    //Actualiza el estado de la cita
     @PutMapping("/actualizarEstado/{id}")
     public String actualizarEstadoCita(@PathVariable Long id) {
         Optional<Cita> citaOptional = citaRepository.findById(id);
@@ -63,6 +62,25 @@ public class CitaController {
             return "Estado de la cita actualizado exitosamente";
         } else {
             return "Cita no encontrada";
+        }
+    }
+
+    //Obtener cita asignadas por id del profecional
+    @GetMapping("/profesional/{profesionalId}")
+    public ResponseEntity<List<Cita>> getCitasByProfesional(@PathVariable Long profesionalId) {
+        List<Cita> citasProfesional = citaRepository.findByProfesionalId(profesionalId);
+        return ResponseEntity.ok(citasProfesional);
+    }
+
+    //Cargar datos del excel
+    @PostMapping("/cargar")
+    public String cargarDatosDesdeExcel(@RequestParam("file") MultipartFile file) {
+        try {
+            excelService.cargarDatosDesdeExcel(file.getInputStream());
+            return "Datos cargados exitosamente";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error al cargar los datos";
         }
     }
 }
