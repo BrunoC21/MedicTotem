@@ -1,6 +1,7 @@
 package com.controllers;
 
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,11 +91,11 @@ public class TicketController {
 
     @PutMapping("/updateHoraConfirmacion/{id}")
 @PreAuthorize("hasRole('ADMIN')")
-public ResponseEntity<Ticket> updateHoraConfirmacion(@PathVariable Long id, @RequestBody Time hora_confirmacion) {
+public ResponseEntity<Ticket> updateHoraConfirmacion(@PathVariable Long id) {
     Optional<Ticket> ticket = ticketRepository.findById(id);
     if (ticket.isPresent()) {
         Ticket updatedTicket = ticket.get();
-        updatedTicket.setHora_confirmacion(hora_confirmacion);
+        updatedTicket.setHora_confirmacion(LocalTime.now());
         ticketRepository.save(updatedTicket);
         return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
     } else {
@@ -104,11 +105,11 @@ public ResponseEntity<Ticket> updateHoraConfirmacion(@PathVariable Long id, @Req
 
 @PutMapping("/updateHoraLlamada/{id}")
 @PreAuthorize("hasRole('ADMIN')")
-public ResponseEntity<Ticket> updateHoraLlamada(@PathVariable Long id, @RequestBody Time hora_llamada) {
+public ResponseEntity<Ticket> updateHoraLlamada(@PathVariable Long id) {
     Optional<Ticket> ticket = ticketRepository.findById(id);
     if (ticket.isPresent()) {
         Ticket updatedTicket = ticket.get();
-        updatedTicket.setHora_llamada(hora_llamada);
+        updatedTicket.setHora_llamada(LocalTime.now());
         ticketRepository.save(updatedTicket);
         return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
     } else {
@@ -118,11 +119,11 @@ public ResponseEntity<Ticket> updateHoraLlamada(@PathVariable Long id, @RequestB
 
 @PutMapping("/updateHoraTermino/{id}")
 @PreAuthorize("hasRole('ADMIN')")
-public ResponseEntity<Ticket> updateHoraTermino(@PathVariable Long id, @RequestBody Time hora_termino) {
+public ResponseEntity<Ticket> updateHoraTermino(@PathVariable Long id) {
     Optional<Ticket> ticket = ticketRepository.findById(id);
     if (ticket.isPresent()) {
         Ticket updatedTicket = ticket.get();
-        updatedTicket.setHora_termino(hora_termino);
+        updatedTicket.setHora_termino(LocalTime.now());
         ticketRepository.save(updatedTicket);
         return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
     } else {

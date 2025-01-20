@@ -2,6 +2,9 @@ package com.models;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+import org.springframework.cglib.core.Local;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,13 +28,13 @@ public class Ticket {
     private boolean estado;
 
     @Column(name = "hora_confirmacion", nullable = false)
-    private Time hora_confirmacion;
+    private LocalTime hora_confirmacion;
 
     @Column(name = "hora_llamada", nullable = true)
-    private Time hora_llamada;
+    private LocalTime hora_llamada;
 
     @Column(name = "hora_termino", nullable = true)
-    private Time hora_termino;
+    private LocalTime hora_termino;
 
     @Column(name = "Fecha", nullable = true)
     private LocalDateTime fecha;
@@ -47,7 +50,7 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(Long id, boolean estado, Time hora_confirmacion, Time hora_llamada, Time hora_termino, LocalDateTime fecha, Totem totem, Cita cita) {
+    public Ticket(Long id, boolean estado, LocalTime hora_confirmacion, LocalTime hora_llamada, LocalTime hora_termino, LocalDateTime fecha, Totem totem, Cita cita) {
         this.id = id;
         this.estado = estado;
         this.hora_confirmacion = hora_confirmacion;
@@ -70,27 +73,27 @@ public class Ticket {
         this.estado = estado;
     }
 
-    public Time getHora_confirmacion() {
+    public LocalTime getHora_confirmacion() {
         return hora_confirmacion;
     }
 
-    public void setHora_confirmacion(Time hora_confirmacion) {
+    public void setHora_confirmacion(LocalTime hora_confirmacion) {
         this.hora_confirmacion = hora_confirmacion;
     }
 
-    public Time getHora_llamada() {
+    public LocalTime getHora_llamada() {
         return hora_llamada;
     }
 
-    public void setHora_llamada(Time hora_llamada) {
+    public void setHora_llamada(LocalTime hora_llamada) {
         this.hora_llamada = hora_llamada;
     }
 
-    public Time getHora_termino() {
+    public LocalTime getHora_termino() {
         return hora_termino;
     }
 
-    public void setHora_termino(Time hora_termino) {
+    public void setHora_termino(LocalTime hora_termino) {
         this.hora_termino = hora_termino;
     }
 
