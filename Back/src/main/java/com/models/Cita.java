@@ -35,6 +35,12 @@ public class Cita {
     @Column(name = "sector")
     private String sector;
 
+    @Column(name = "estado_llamado")
+    private Boolean estado_llamado;
+
+    @Column(name = "estado_termino")
+    private Boolean estado_termino;
+
     @ManyToOne
     @JoinColumn(name = "profesional_id")
     private User profesional;
@@ -46,13 +52,15 @@ public class Cita {
     public Cita() {
     }
 
-    public Cita(String estado, String tipoAtencion, Time horaCita, 
-                    LocalDate fechaCita, String sector, User profesional, Paciente paciente) {
+    public Cita(Long id, String estado, String tipoAtencion, Time horaCita, LocalDate fechaCita, String sector, Boolean estado_llamado, Boolean estado_termino, User profesional, Paciente paciente) {
+        this.id = id;
         this.estado = estado;
         this.tipoAtencion = tipoAtencion;
         this.horaCita = horaCita;
         this.fechaCita = fechaCita;
         this.sector = sector;
+        this.estado_llamado = estado_llamado;
+        this.estado_termino = estado_termino;
         this.profesional = profesional;
         this.paciente = paciente;
     }
@@ -99,6 +107,22 @@ public class Cita {
 
     public void setSector(String sector){
         this.sector = sector;
+    }
+
+    public Boolean getEstado_llamado() {
+        return estado_llamado;
+    }
+
+    public void setEstado_llamado(Boolean estado_llamado) {
+        this.estado_llamado = estado_llamado;
+    }
+
+    public Boolean getEstado_termino() {
+        return estado_termino;
+    }
+
+    public void setEstado_termino(Boolean estado_termino) {
+        this.estado_termino = estado_termino;
     }
 
     public User getProfesional() {

@@ -65,8 +65,10 @@ public class TicketController {
         if (ticket.isPresent()) {
             Ticket updatedTicket = ticket.get();
             updatedTicket.setEstado(ticketDetails.getEstado());
-            updatedTicket.setFecha_emision(ticketDetails.getFecha_emision());
-            updatedTicket.setFecha_fin(ticketDetails.getFecha_fin());
+            updatedTicket.setHora_confirmacion(ticketDetails.getHora_confirmacion());
+            updatedTicket.setHora_llamada(ticketDetails.getHora_llamada());
+            updatedTicket.setHora_termino(ticketDetails.getHora_termino());
+            updatedTicket.setFecha(ticketDetails.getFecha());
             ticketRepository.save(updatedTicket);
             return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
         } else {
