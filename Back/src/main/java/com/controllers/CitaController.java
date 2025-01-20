@@ -3,6 +3,7 @@ package com.controllers;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -67,6 +68,32 @@ public class CitaController {
         }
     }
 
+    @PutMapping("/actualizarEstadoLlamada/{id}")
+    public String actualizarEstadoLlamada(@PathVariable Long id) {
+        Optional<Cita> citaOptional = citaRepository.findById(id);
+        if (citaOptional.isPresent()) {
+            Cita cita = citaOptional.get();
+            cita.setEstadoLlamado(true);
+            citaRepository.save(cita);
+            return "Estado de la cita actualizado exitosamente";
+        } else {
+            return "Cita no encontrada";
+        }
+    }
+
+    @PutMapping("/actualizarEstadoTermino/{id}")
+    public String actualizarEstadoTermino(@PathVariable Long id) {
+        Optional<Cita> citaOptional = citaRepository.findById(id);
+        if (citaOptional.isPresent()) {
+            Cita cita = citaOptional.get();
+            cita.setEstadoTermino(true);
+            citaRepository.save(cita);
+            return "Estado de la cita actualizado exitosamente";
+        } else {
+            return "Cita no encontrada";
+        }
+    }
+
     //Obtener cita asignadas por id del profecional
     @GetMapping("/profesional/{profesionalId}")
     public ResponseEntity<List<Cita>> getCitasByProfesional(@PathVariable Long profesionalId) {
@@ -78,7 +105,10 @@ public class CitaController {
     @GetMapping("/profesional")
     public List<Cita> getCitasByProfesionalLogueado(Authentication authentication) {
         Long profesionalId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
-        return citaRepository.findByProfesionalId(profesionalId);
+        List<Cita> citas = citaRepository.findByProfesionalId(profesionalId);
+        return citas.stream()
+                .filter(cita -> cita.getEstadoTermino() == null || !cita.getEstadoTermino())
+                .collect(Collectors.toList());
     }
 
     //Cargar datos del excel
