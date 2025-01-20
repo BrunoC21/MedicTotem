@@ -18,6 +18,9 @@ public class Box{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "nombre")
+    private String nombre;
+
     @Column(name = "estado")
     private Boolean estado;
 
@@ -33,7 +36,8 @@ public class Box{
     public Box() {
     }   
 
-    public Box(Boolean estado, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+    public Box(String nombre, Boolean estado, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        this.nombre= nombre;
         this.estado = estado;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
@@ -41,6 +45,14 @@ public class Box{
 
     public Long getId() {
         return id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public Boolean getEstado() {

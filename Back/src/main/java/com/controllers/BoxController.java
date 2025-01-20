@@ -26,4 +26,9 @@ public class BoxController {
         return boxRepository.findAll();
     }
 
+    @GetMapping("/disponibles")
+    public List<Box> listaTodosBoxDisponibles(){
+        return boxRepository.findByEstadoTrue();
+    }
+
 }
