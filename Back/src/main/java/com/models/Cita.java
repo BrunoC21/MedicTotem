@@ -109,19 +109,19 @@ public class Cita {
         this.sector = sector;
     }
 
-    public Boolean getEstado_llamado() {
+    public Boolean getEstadoLlamado() {
         return estado_llamado;
     }
 
-    public void setEstado_llamado(Boolean estado_llamado) {
+    public void setEstadoLlamado(Boolean estado_llamado) {
         this.estado_llamado = estado_llamado;
     }
 
-    public Boolean getEstado_termino() {
+    public Boolean getEstadoTermino() {
         return estado_termino;
     }
 
-    public void setEstado_termino(Boolean estado_termino) {
+    public void setEstadoTermino(Boolean estado_termino) {
         this.estado_termino = estado_termino;
     }
 
