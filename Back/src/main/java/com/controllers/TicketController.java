@@ -1,5 +1,6 @@
 package com.controllers;
 
+import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,4 +87,46 @@ public class TicketController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PutMapping("/updateHoraConfirmacion/{id}")
+@PreAuthorize("hasRole('ADMIN')")
+public ResponseEntity<Ticket> updateHoraConfirmacion(@PathVariable Long id, @RequestBody Time hora_confirmacion) {
+    Optional<Ticket> ticket = ticketRepository.findById(id);
+    if (ticket.isPresent()) {
+        Ticket updatedTicket = ticket.get();
+        updatedTicket.setHora_confirmacion(hora_confirmacion);
+        ticketRepository.save(updatedTicket);
+        return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
+    } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+}
+
+@PutMapping("/updateHoraLlamada/{id}")
+@PreAuthorize("hasRole('ADMIN')")
+public ResponseEntity<Ticket> updateHoraLlamada(@PathVariable Long id, @RequestBody Time hora_llamada) {
+    Optional<Ticket> ticket = ticketRepository.findById(id);
+    if (ticket.isPresent()) {
+        Ticket updatedTicket = ticket.get();
+        updatedTicket.setHora_llamada(hora_llamada);
+        ticketRepository.save(updatedTicket);
+        return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
+    } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+}
+
+@PutMapping("/updateHoraTermino/{id}")
+@PreAuthorize("hasRole('ADMIN')")
+public ResponseEntity<Ticket> updateHoraTermino(@PathVariable Long id, @RequestBody Time hora_termino) {
+    Optional<Ticket> ticket = ticketRepository.findById(id);
+    if (ticket.isPresent()) {
+        Ticket updatedTicket = ticket.get();
+        updatedTicket.setHora_termino(hora_termino);
+        ticketRepository.save(updatedTicket);
+        return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
+    } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+}
 }
