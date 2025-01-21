@@ -110,11 +110,33 @@ public class UsuarioController {
             Box box = boxOptional.get();
             user.setBox(box);
             userRepository.save(user);
+            box.setEstado(false);
+            boxRepository.save(box);
             return ResponseEntity.ok("Box actualizado exitosamente");
         } else {
             return ResponseEntity.status(404).body("Box no encontrado");
         }
     }
+
+    @PutMapping("/liberarBox/{boxId}")
+    public ResponseEntity<String> LiberarBoxUsuarioLogueado(@PathVariable Long boxId, Authentication authentication) {
+        Long usuarioId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+        Optional<User> userOptional = userRepository.findById(usuarioId);
+        User user = userOptional.get();
+        Optional<Box> boxOptional = boxRepository.findById(boxId);
+
+        if (boxOptional.isPresent()) {
+            Box box = boxOptional.get();
+            user.setBox(null);
+            userRepository.save(user);
+            box.setEstado(true);
+            boxRepository.save(box);
+            return ResponseEntity.ok("Box actualizado exitosamente");
+        } else {
+            return ResponseEntity.status(404).body("Box no encontrado");
+        }
+    }
+
 
 
 
