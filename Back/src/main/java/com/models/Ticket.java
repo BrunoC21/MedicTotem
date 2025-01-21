@@ -1,10 +1,7 @@
 package com.models;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-
-import org.springframework.cglib.core.Local;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
