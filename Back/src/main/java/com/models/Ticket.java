@@ -1,5 +1,6 @@
 package com.models;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -21,33 +22,33 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "estado", nullable = false)
-    private boolean estado;
+    @Column(name = "estado")
+    private String estado;
 
-    @Column(name = "hora_confirmacion", nullable = false)
+    @Column(name = "hora_confirmacion")
     private LocalTime hora_confirmacion;
 
-    @Column(name = "hora_llamada", nullable = true)
+    @Column(name = "hora_llamada")
     private LocalTime hora_llamada;
 
-    @Column(name = "hora_termino", nullable = true)
+    @Column(name = "hora_termino")
     private LocalTime hora_termino;
 
-    @Column(name = "Fecha", nullable = true)
-    private LocalDateTime fecha;
+    @Column(name = "Fecha")
+    private LocalDate fecha;
 
     @ManyToOne
-    @JoinColumn(name = "totem_id", nullable = false)
+    @JoinColumn(name = "totem_id")
     private Totem totem;
 
     @OneToOne
-    @JoinColumn(name = "cita_id", nullable = false)
+    @JoinColumn(name = "cita_id")
     private Cita cita;
 
     public Ticket() {
     }
 
-    public Ticket(Long id, boolean estado, LocalTime hora_confirmacion, LocalTime hora_llamada, LocalTime hora_termino, LocalDateTime fecha, Totem totem, Cita cita) {
+    public Ticket(Long id, String estado, LocalTime hora_confirmacion, LocalTime hora_llamada, LocalTime hora_termino, LocalDate fecha, Totem totem, Cita cita) {
         this.id = id;
         this.estado = estado;
         this.hora_confirmacion = hora_confirmacion;
@@ -62,11 +63,11 @@ public class Ticket {
         return id;
     }
 
-    public boolean getEstado() {
+    public String getEstado() {
         return estado;
     }
 
-    public void setEstado(boolean estado) {
+    public void setEstado(String estado) {
         this.estado = estado;
     }
 
@@ -94,11 +95,27 @@ public class Ticket {
         this.hora_termino = hora_termino;
     }
 
-    public LocalDateTime getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDateTime fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
+    }
+
+    public Cita getCita() {
+        return cita;
+    }
+
+    public void setCita(Cita cita) {
+        this.cita = cita;
+    }
+
+    public Totem getTotem() {
+        return totem;
+    }
+
+    public void setTotem(Totem totem) {
+        this.totem = totem;
     }
 }
