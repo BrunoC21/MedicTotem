@@ -161,4 +161,33 @@ public class TicketController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    // Actualiza el estado de un ticket
+    @PutMapping("/updateEstado/{id}")
+    public ResponseEntity<?> updateEstado(@PathVariable Long id, @RequestBody String estado) {
+        if (!isValidEstado(estado)) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", "Estado inválido. Use: PENDIENTE, TERMINADO o PERDIDO"));
+        }
+
+        return ticketRepository.findById(id)
+            .map(ticket -> {
+                ticket.setEstado(estado);
+                ticketRepository.save(ticket);
+                return ResponseEntity.ok()
+                    .body(Map.of("message", "Estado actualizado exitosamente", 
+                                "ticket", ticket));
+            })
+            .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(Map.of("error", "Ticket no encontrado con ID: " + id)));
+    }
+
+    private boolean isValidEstado(String estado) {
+        return estado != null && (
+            estado.equals("Terminado") ||
+            estado.equals("Perdido")
+        );}
+
+
+
 }
