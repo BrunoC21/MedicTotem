@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TotemRepository extends JpaRepository<Totem, Long> {
     Optional<Totem> findById(Long id);
+    Optional<Totem> findBySector(String sector);
 }
