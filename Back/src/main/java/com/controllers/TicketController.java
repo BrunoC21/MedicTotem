@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.models.Cita;
 import com.models.Ticket;
+import com.models.Totem;
 import com.repository.CitaRepository;
 import com.repository.TicketRepository;
+import com.repository.TotemRepository;
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials = "true")
 @RestController
@@ -36,6 +38,9 @@ public class TicketController {
 
     @Autowired
     private CitaRepository citaRepository;
+
+    @Autowired
+    private TotemRepository totemRepository;
 
     private int ticketNumber = 1; // Puedes persistir esto en la base de datos.
 
@@ -70,31 +75,39 @@ public class TicketController {
     */
 
     @PostMapping("/create/{id}")
-    public ResponseEntity<?> createTicket(@PathVariable Long id) {
-        Optional<Cita> citaOptional = citaRepository.findById(id);
-                    
-        if (citaOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                 .body(Map.of("message", "Cita no encontrada para ID: " + id));
-        }
-
-        Cita cita = citaOptional.get();
-
-        ZoneId zonaChile = ZoneId.of("America/Santiago");
-        ZonedDateTime ahora = ZonedDateTime.now(zonaChile);
-
-        Ticket newTicket = new Ticket();
-        newTicket.setCita(cita);
-        newTicket.setEstado("Pendiente");
-        newTicket.setHora_confirmacion(ahora.toLocalTime());
-        newTicket.setFecha(ahora.toLocalDate());
-
-        Ticket savedTicket = ticketRepository.save(newTicket);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                             .body(Map.of("message", "Ticket creado exitosamente", 
-                                          "ticketId", savedTicket.getId()));
+public ResponseEntity<?> createTicket(@PathVariable Long id) {
+    Optional<Cita> citaOptional = citaRepository.findById(id);
+                
+    if (citaOptional.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body(Map.of("message", "Cita no encontrada para ID: " + id));
     }
+
+    Cita cita = citaOptional.get();
+    String sector = cita.getSector();
+    
+    Optional<Totem> totemOptional = totemRepository.findBySector(sector);
+    if (totemOptional.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                           .body(Map.of("message", "No hay totem disponible para el sector: " + sector));
+    }
+
+    ZoneId zonaChile = ZoneId.of("America/Santiago");
+    ZonedDateTime ahora = ZonedDateTime.now(zonaChile);
+
+    Ticket newTicket = new Ticket();
+    newTicket.setCita(cita);
+    newTicket.setTotem(totemOptional.get());
+    newTicket.setEstado("Pendiente");
+    newTicket.setHora_confirmacion(ahora.toLocalTime());
+    newTicket.setFecha(ahora.toLocalDate());
+
+    Ticket savedTicket = ticketRepository.save(newTicket);
+
+    return ResponseEntity.status(HttpStatus.CREATED)
+                         .body(Map.of("message", "Ticket creado exitosamente", 
+                                    "ticketId", savedTicket.getId()));
+}
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
