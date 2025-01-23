@@ -163,7 +163,7 @@ public ResponseEntity<?> createTicket(@PathVariable Long id) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
+  //Actualizar hora de termino
     @PutMapping("/updateHoraTermino/{id}")
     public ResponseEntity<Ticket> updateHoraTermino(@PathVariable Long id) {
         Optional<Ticket> ticket = ticketRepository.findByCitaId(id);
