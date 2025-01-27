@@ -42,15 +42,6 @@ public class TicketController {
 
     @Autowired
     private TotemRepository totemRepository;
-
-    private int ticketNumber = 1; // Puedes persistir esto en la base de datos.
-
-
-    @GetMapping("/next")
-    public ResponseEntity<Integer> getNextTicketNumber() {
-        int currentTicketNumber = ticketNumber++;
-        return ResponseEntity.ok(currentTicketNumber);
-    }
     
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
@@ -184,8 +175,4 @@ public class TicketController {
             .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(Map.of("error", "Ticket no encontrado con ID: " + id)));
     }
-
-   
-
-
 }
