@@ -68,6 +68,7 @@ public class CitaController {
         }
     }
 
+    //Actualiza el estado de la llamada
     @PutMapping("/actualizarEstadoLlamada/{id}")
     public String actualizarEstadoLlamada(@PathVariable Long id) {
         Optional<Cita> citaOptional = citaRepository.findById(id);
