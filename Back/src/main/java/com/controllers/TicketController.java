@@ -3,6 +3,7 @@ package com.controllers;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -65,14 +66,6 @@ public class TicketController {
         return ticket.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                      .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-    /* 
-    @PostMapping("/add")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Ticket> addTicket(@RequestBody Ticket ticket) {
-        Ticket newTicket = ticketRepository.save(ticket);
-        return new ResponseEntity<>(newTicket, HttpStatus.CREATED);
-    }
-    */
 
     @PostMapping("/create/{id}")
     public ResponseEntity<?> createTicket(@PathVariable Long id) {
@@ -99,7 +92,7 @@ public class TicketController {
         newTicket.setCita(cita);
         newTicket.setTotem(totemOptional.get());
         newTicket.setEstado("Pendiente");
-        newTicket.setHora_confirmacion(ahora.toLocalTime());
+        newTicket.setHora_confirmacion(ahora.toLocalTime().truncatedTo(ChronoUnit.SECONDS));
         newTicket.setFecha(ahora.toLocalDate());
 
         Ticket savedTicket = ticketRepository.save(newTicket);
@@ -116,9 +109,9 @@ public class TicketController {
         if (ticket.isPresent()) {
             Ticket updatedTicket = ticket.get();
             updatedTicket.setEstado(ticketDetails.getEstado());
-            updatedTicket.setHora_confirmacion(ticketDetails.getHora_confirmacion());
-            updatedTicket.setHora_llamada(ticketDetails.getHora_llamada());
-            updatedTicket.setHora_termino(ticketDetails.getHora_termino());
+            updatedTicket.setHora_confirmacion(ticketDetails.getHora_confirmacion().truncatedTo(ChronoUnit.SECONDS));
+            updatedTicket.setHora_llamada(ticketDetails.getHora_llamada().truncatedTo(ChronoUnit.SECONDS));
+            updatedTicket.setHora_termino(ticketDetails.getHora_termino().truncatedTo(ChronoUnit.SECONDS));
             updatedTicket.setFecha(ticketDetails.getFecha());
             ticketRepository.save(updatedTicket);
             return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
@@ -143,7 +136,7 @@ public class TicketController {
         Optional<Ticket> ticket = ticketRepository.findById(id);
         if (ticket.isPresent()) {
             Ticket updatedTicket = ticket.get();
-            updatedTicket.setHora_confirmacion(LocalTime.now());
+            updatedTicket.setHora_confirmacion(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
             ticketRepository.save(updatedTicket);
             return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
         } else {
@@ -156,7 +149,7 @@ public class TicketController {
         Optional<Ticket> ticket = ticketRepository.findByCitaId(id);
         if (ticket.isPresent()) {
             Ticket updatedTicket = ticket.get();
-            updatedTicket.setHora_llamada(LocalTime.now());
+            updatedTicket.setHora_llamada(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
             ticketRepository.save(updatedTicket);
             return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
         } else {
@@ -169,7 +162,7 @@ public class TicketController {
         Optional<Ticket> ticket = ticketRepository.findByCitaId(id);
         if (ticket.isPresent()) {
             Ticket updatedTicket = ticket.get();
-            updatedTicket.setHora_termino(LocalTime.now());
+            updatedTicket.setHora_termino(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
             ticketRepository.save(updatedTicket);
             return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
         } else {
@@ -180,12 +173,7 @@ public class TicketController {
     // Actualiza el estado de un ticket
     @PutMapping("/updateEstado/{id}")
     public ResponseEntity<?> updateEstado(@PathVariable Long id, @RequestBody String estado) {
-        if (!isValidEstado(estado)) {
-            return ResponseEntity.badRequest()
-                .body(Map.of("error", "Estado inválido. Use: PENDIENTE, TERMINADO o PERDIDO"));
-        }
-
-        return ticketRepository.findById(id)
+        return ticketRepository.findByCitaId(id)
             .map(ticket -> {
                 ticket.setEstado(estado);
                 ticketRepository.save(ticket);
@@ -197,12 +185,7 @@ public class TicketController {
             .body(Map.of("error", "Ticket no encontrado con ID: " + id)));
     }
 
-    private boolean isValidEstado(String estado) {
-        return estado != null && (
-            estado.equals("Terminado") ||
-            estado.equals("Perdido")
-        );}
-
+   
 
 
 }

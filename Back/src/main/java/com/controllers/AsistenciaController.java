@@ -2,6 +2,8 @@ package com.controllers;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,7 +50,7 @@ public class AsistenciaController {
 
             AsistenciaMedica asistencia = new AsistenciaMedica();
             asistencia.setFecha(LocalDate.now());
-            asistencia.setHoraInicio(LocalTime.now());
+            asistencia.setHoraInicio(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
             asistencia.setProfesional(profesional);
 
             asistenciaRepository.save(asistencia);
@@ -56,4 +59,21 @@ public class AsistenciaController {
             return ResponseEntity.status(404).body("Usuario no encontrado");
         }
     }
+
+    @PutMapping("/updateFechaTermino")
+    public ResponseEntity<String> actualizarFechaTermino(Authentication authentication) {
+        Long profesionalId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+        
+        List<AsistenciaMedica> asistencia = asistenciaRepository.findByProfesionalId(profesionalId);
+        
+        AsistenciaMedica asistenciaReciente = asistencia.stream()
+                .max(Comparator.comparing(AsistenciaMedica::getHoraInicio))
+                .orElse(null);
+
+                asistenciaReciente.setHoraTermino(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+        asistenciaRepository.save(asistenciaReciente);
+        return ResponseEntity.ok("Fecha de término actualizada exitosamente");
+    }
+
+
 }
