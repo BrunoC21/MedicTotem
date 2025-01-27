@@ -60,7 +60,7 @@ public class CitaController {
         Optional<Cita> citaOptional = citaRepository.findById(id);
         if (citaOptional.isPresent()) {
             Cita cita = citaOptional.get();
-            cita.setEstado("Completado");
+            cita.setEstado("Confirmado");
             citaRepository.save(cita);
             return "Estado de la cita actualizado exitosamente";
         } else {
@@ -109,6 +109,7 @@ public class CitaController {
         List<Cita> citas = citaRepository.findByProfesionalId(profesionalId);
         return citas.stream()
                 .filter(cita -> cita.getEstadoTermino() == null || !cita.getEstadoTermino())
+                .filter(cita -> cita.getEstado().equalsIgnoreCase("Confirmado"))
                 .collect(Collectors.toList());
     }
 
