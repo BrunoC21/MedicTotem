@@ -42,14 +42,14 @@ public class TicketController {
 
     @Autowired
     private TotemRepository totemRepository;
-    
+
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Ticket>> getAllTickets() {
         List<Ticket> tickets = ticketRepository.findAll();
         return new ResponseEntity<>(tickets, HttpStatus.OK);
     }
-    
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Ticket> getTicketById(@PathVariable Long id) {
@@ -61,7 +61,7 @@ public class TicketController {
     @PostMapping("/create/{id}")
     public ResponseEntity<?> createTicket(@PathVariable Long id) {
         Optional<Cita> citaOptional = citaRepository.findById(id);
-                    
+
         if (citaOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                 .body(Map.of("message", "Cita no encontrada para ID: " + id));
@@ -69,7 +69,7 @@ public class TicketController {
 
         Cita cita = citaOptional.get();
         String sector = cita.getSector();
-        
+
         Optional<Totem> totemOptional = totemRepository.findBySector(sector);
         if (totemOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -161,9 +161,13 @@ public class TicketController {
         }
     }
 
-    // Actualiza el estado de un ticket
     @PutMapping("/updateEstado/{id}")
     public ResponseEntity<?> updateEstado(@PathVariable Long id, @RequestBody String estado) {
+        if (!isValidEstado(estado)) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", "Estado inválido. Use: PENDIENTE, TERMINADO o PERDIDO"));
+        }
+
         return ticketRepository.findByCitaId(id)
             .map(ticket -> {
                 ticket.setEstado(estado);
@@ -174,5 +178,12 @@ public class TicketController {
             })
             .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(Map.of("error", "Ticket no encontrado con ID: " + id)));
+    }
+
+    private boolean isValidEstado(String estado) {
+        return estado != null && (
+            estado.equals("Terminado") ||
+            estado.equals("Perdido")
+        );
     }
 }
