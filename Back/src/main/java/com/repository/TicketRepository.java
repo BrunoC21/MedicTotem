@@ -13,6 +13,7 @@ import com.models.Ticket;
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
     Optional<Ticket> findById(Long id);
     Optional <Ticket> findByCitaId(Long id);
+    Optional <Ticket> findByCitaPacienteRut(String rut);
 
     List<Ticket> findByTotemSector(String sector);
 }

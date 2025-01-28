@@ -82,6 +82,7 @@ public class CitaController {
         }
     }
 
+    //actualizar estado de termino
     @PutMapping("/actualizarEstadoTermino/{id}")
     public String actualizarEstadoTermino(@PathVariable Long id) {
         Optional<Cita> citaOptional = citaRepository.findById(id);
