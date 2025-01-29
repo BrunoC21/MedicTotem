@@ -1,6 +1,7 @@
 package com.controllers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,23 +32,31 @@ public class MonitoresController {
 
     //Obtener todos los tickets
     @GetMapping("/Sector1")
-    public List<Ticket> listaTodosTickets() {
-        return ticketRepository.findByTotemSector("Sector 1");
+    public List<Ticket> listaTodosTicketsSector1() {
+        return ticketRepository.findByTotemSector("Sector 1").stream()
+                .filter(ticket -> "Llamado".equals(ticket.getEstado()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/Sector2")
     public List<Ticket> listaTodosTickets2() {
-        return ticketRepository.findByTotemSector("Sector 2");
+        return ticketRepository.findByTotemSector("Sector 2").stream()
+        .filter(ticket -> "Llamado".equals(ticket.getEstado()))
+        .collect(Collectors.toList());
     }
 
     @GetMapping("/Sector4")
     public List<Ticket> listaTodosTickets4() {
-        return ticketRepository.findByTotemSector("Sector 4");
+        return ticketRepository.findByTotemSector("Sector 4").stream()
+        .filter(ticket -> "Llamado".equals(ticket.getEstado()))
+        .collect(Collectors.toList());
     }
 
     @GetMapping("/Sector5")
     public List<Ticket> listaTodosTickets5() {
-        return ticketRepository.findByTotemSector("Sector 5");
+        return ticketRepository.findByTotemSector("Sector 5").stream()
+        .filter(ticket -> "Llamado".equals(ticket.getEstado()))
+        .collect(Collectors.toList());
     }
     
 }

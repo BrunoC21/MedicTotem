@@ -183,7 +183,20 @@ public class TicketController {
     private boolean isValidEstado(String estado) {
         return estado != null && (
             estado.equals("Terminado") ||
+            estado.equals("Llamado") ||
             estado.equals("Perdido")
         );
+    }
+
+    @GetMapping("/cita/{rut}")
+    public ResponseEntity<?> getTicketsByCitaRut(@PathVariable String rut) {
+        Optional<Ticket> ticketOptional = ticketRepository.findByCitaPacienteRut(rut);
+        if (ticketOptional.isPresent()) {
+            Long ticketId = ticketOptional.get().getId();
+            return ResponseEntity.ok(ticketId);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                 .body(Map.of("error", "Ticket no encontrado para el rut: " + rut));
+        }
     }
 }
