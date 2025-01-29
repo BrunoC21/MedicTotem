@@ -54,6 +54,12 @@ public class CitaController {
         return citaRepository.findByPacienteRutAndSector(rut, "Sector " + sector);
     }
 
+    @GetMapping("/paciente/{rut}/{sector}/{tipo}")
+    public ResponseEntity<List<Cita>> obtenerCitasTransversal(@PathVariable String rut, @PathVariable String sector, @PathVariable String tipo) {
+        List<Cita> citas = citaRepository.findByPacienteRutAndSectorAndTipoAtencion(rut, "Sector " + sector, tipo);
+        return ResponseEntity.ok(citas);
+    }
+    
     //Actualiza el estado de la cita
     @PutMapping("/actualizarEstado/{id}")
     public String actualizarEstadoCita(@PathVariable Long id) {

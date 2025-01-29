@@ -70,6 +70,10 @@ public class TicketController {
         Cita cita = citaOptional.get();
         String sector = cita.getSector();
 
+        if(sector.equals("Sector Transversal")){
+            sector = "Sector 5";
+        }
+
         Optional<Totem> totemOptional = totemRepository.findBySector(sector);
         if (totemOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

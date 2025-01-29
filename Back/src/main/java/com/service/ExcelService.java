@@ -61,7 +61,7 @@ public class ExcelService {
             //Agregar Datos para Entidad Cita
             Cita cita = new Cita();
             cita.setEstado(currentRow.getCell(16).getStringCellValue());
-            cita.setTipoAtencion(currentRow.getCell(4).getStringCellValue());
+            cita.setTipoAtencion(currentRow.getCell(20).getStringCellValue());
             cita.setHoraCita(new Time(currentRow.getCell(10).getDateCellValue().getTime()));
             
             String fechaCitaStr = currentRow.getCell(9).getStringCellValue();
