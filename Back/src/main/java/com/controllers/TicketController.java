@@ -29,6 +29,7 @@ import com.repository.CitaRepository;
 import com.repository.TicketRepository;
 import com.repository.TotemRepository;
 
+
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials = "true")
 @RestController
 @RequestMapping("/api/ticket")
@@ -54,6 +55,13 @@ public class TicketController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Ticket> getTicketById(@PathVariable Long id) {
         Optional<Ticket> ticket = ticketRepository.findById(id);
+        return ticket.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                     .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/cita/{id}")
+    public ResponseEntity<Ticket> getTicketByCita(@PathVariable Long id) {
+        Optional<Ticket> ticket = ticketRepository.findByCitaId(id);
         return ticket.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                      .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -125,6 +133,7 @@ public class TicketController {
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Ticket> updateTicket(@PathVariable Long id, @RequestBody Ticket ticketDetails) {
+        
         Optional<Ticket> ticket = ticketRepository.findById(id);
         if (ticket.isPresent()) {
             Ticket updatedTicket = ticket.get();
