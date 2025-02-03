@@ -58,5 +58,12 @@ public class MonitoresController {
         .filter(ticket -> "Llamado".equals(ticket.getEstado()))
         .collect(Collectors.toList());
     }
+
+    @GetMapping("/SectorDental")
+    public List<Ticket> listaTodosTicketsDental() {
+        return ticketRepository.findByTotemSector("Sector Dental").stream()
+        .filter(ticket -> "Llamado".equals(ticket.getEstado()))
+        .collect(Collectors.toList());
+    }
     
 }

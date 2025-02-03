@@ -60,8 +60,8 @@ public class TicketController {
 
     @PostMapping("/create/{id}")
     public ResponseEntity<?> createTicket(@PathVariable Long id) {
+        
         Optional<Cita> citaOptional = citaRepository.findById(id);
-
         if (citaOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                 .body(Map.of("message", "Cita no encontrada para ID: " + id));
@@ -71,7 +71,7 @@ public class TicketController {
         String sector = cita.getSector();
 
         if(sector.equals("Sector Transversal")){
-            sector = "Sector 5";
+            sector = asignarTransversal(cita.getTipoAtencion());
         }
 
         Optional<Totem> totemOptional = totemRepository.findBySector(sector);
@@ -95,6 +95,31 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.CREATED)
                             .body(Map.of("message", "Ticket creado exitosamente", 
                                         "ticketId", savedTicket.getId()));
+    }
+
+
+    /* Funcion que se llama para poder optimisar el asiganado de totem de cada ticket
+    En caso de que la cita pertenesca al sector transversal */
+    public String asignarTransversal(String tipoAtencion){
+        String atencion = tipoAtencion.toLowerCase();
+
+        if (atencion.contains("dental")) {
+            return "Sector Dental";
+        } 
+        if (atencion.contains("discapacidad")) {
+            return "Sector 4";
+        } 
+        if (atencion.contains("era")) {
+            return "Sector 2";
+        } 
+
+        return switch (tipoAtencion) {
+            case "Ecografía Obstétrica con doppler" -> "Sector 2";
+            case "Control Pie Diabético" -> "Sector 2";
+            case "Curaciones" -> "Sector 4";
+            case "Sector Transversal" -> "Sector 5";
+            default -> "Sector 1";
+        };
     }
 
     @PutMapping("/update/{id}")
