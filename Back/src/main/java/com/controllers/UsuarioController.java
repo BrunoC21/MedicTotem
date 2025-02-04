@@ -97,7 +97,24 @@ public class UsuarioController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
 
+    @PutMapping("/datos/{userId}")
+    @PreAuthorize("hasRole('MEDICO') or hasRole('ADMIN')")
+    public ResponseEntity<User> actualizarDatosPersonales(@PathVariable Long userId, @RequestBody User usuarioActualizado) {
+        Optional<User> usuarioOptional = userRepository.findById(userId);
+
+        if (usuarioOptional.isPresent()) {
+            User usuario = usuarioOptional.get();
+
+            usuario.setRut(usuarioActualizado.getRut());
+            usuario.setNombre(usuarioActualizado.getNombre());
+            usuario.setApellido(usuarioActualizado.getApellido());
+            
+            userRepository.save(usuario);
+            return ResponseEntity.ok(usuario);
+        } 
+        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/actualizarBox/{boxId}")

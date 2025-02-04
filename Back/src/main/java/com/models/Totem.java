@@ -21,15 +21,20 @@ public class Totem {
     @Column(name = "sector", nullable = false, length = 50)
     private String sector;
 
+    @Column(name = "nroTicket", nullable = false)
+    private int nroTicket = 1;
+
     @OneToMany(mappedBy = "totem")
     private Set<Ticket> tickets;
 
     public Totem() {
+        this.nroTicket = 1;
     }
 
     public Totem(Long id, String sector) {
         this.id = id;
         this.sector = sector;
+        this.nroTicket = 1;
     }
 
     public Long getId() {
@@ -42,5 +47,17 @@ public class Totem {
 
     public void setSector(String sector) {
         this.sector = sector;
+    }
+
+    public int getNroTicket() {
+        return nroTicket;
+    }
+
+    public void setNroTicket(int nroTicket) {
+        this.nroTicket = nroTicket;
+    }
+
+    public void countNroTicket() {
+        this.nroTicket++;
     }
 }
