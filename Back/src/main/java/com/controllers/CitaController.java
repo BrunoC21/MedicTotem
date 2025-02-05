@@ -1,5 +1,6 @@
 package com.controllers;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,10 +61,22 @@ public class CitaController {
     public String actualizarEstadoCita(@PathVariable Long id) {
         Optional<Cita> citaOptional = citaRepository.findById(id);
         if (citaOptional.isPresent()) {
-            Cita cita = citaOptional.get();
-            cita.setEstado("Confirmado");
-            citaRepository.save(cita);
-            return "Estado de la cita actualizado exitosamente";
+            String tipoAtencion = citaOptional.get().getTipoAtencion();
+            if (tipoAtencion.equals("control cardiovascular") || 
+                tipoAtencion.equals("Otras Morbilidades") || 
+                tipoAtencion.equals("Morbilidad Adulto") || 
+                tipoAtencion.equals("Examenes de Morbilidad")) {
+                
+                Cita cita = citaOptional.get();
+                cita.setEstado("Preparacion");
+                citaRepository.save(cita);
+                return "Estado de la cita actualizado exitosamente";
+            } else {
+                Cita cita = citaOptional.get();
+                cita.setEstado("Confirmado");
+                citaRepository.save(cita);
+                return "Estado de la cita actualizado exitosamente";
+            }
         } else {
             return "Cita no encontrada";
         }
@@ -97,6 +110,21 @@ public class CitaController {
         }
     }
 
+     //actualizar estado de termino
+     @PutMapping("/actualizarEstadoTerminoTens/{id}")
+     public String actualizarEstadoTerminoTens(@PathVariable Long id) {
+         Optional<Cita> citaOptional = citaRepository.findById(id);
+         if (citaOptional.isPresent()) {
+             Cita cita = citaOptional.get();
+             cita.setEstadoTermino(true);
+             cita.setEstado("Confirmado");
+             citaRepository.save(cita);
+             return "Estado de la cita actualizado exitosamente";
+         } else {
+             return "Cita no encontrada";
+         }
+     }
+
     //Obtener cita asignadas por id del profecional
     @GetMapping("/profesional/{profesionalId}")
     public ResponseEntity<List<Cita>> getCitasByProfesional(@PathVariable Long profesionalId) {
@@ -114,6 +142,27 @@ public class CitaController {
                 .filter(cita -> cita.getEstado().equalsIgnoreCase("Confirmado"))
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/tens/{sector}")
+    public List<Cita> getCitasByTensLogueado(@PathVariable String sector) {
+        List<Cita> citas = citaRepository.findBySector("Sector " + sector);
+    
+        List<String> tiposPermitidos = Arrays.asList(
+            "control cardiovascular",
+            "Otras Morbilidades",
+            "Morbilidad Adulto",
+            "Examenes de Morbilidad"
+        );
+    
+        return citas.stream()
+            .filter(cita -> cita.getEstadoTermino() == null || !cita.getEstadoTermino())
+            .filter(cita -> cita.getEstado().equalsIgnoreCase("Preparacion"))
+            .filter(cita -> tiposPermitidos.contains(cita.getTipoAtencion()))
+            .collect(Collectors.toList());
+    }
+
+
+
 
 }
 
