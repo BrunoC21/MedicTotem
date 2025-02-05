@@ -221,8 +221,9 @@ public class TicketController {
     private boolean isValidEstado(String estado) {
         return estado != null && (
             estado.equals("Terminado") ||
+            estado.equals("Preparado") ||
             estado.equals("Llamado") ||
-            estado.equals("Perdido")
+            estado.equals("Perdido") 
         );
     }
 
