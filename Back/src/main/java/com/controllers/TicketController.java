@@ -59,7 +59,7 @@ public class TicketController {
                      .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/cita/{id}")
+    @GetMapping("/estado/{id}")
     public ResponseEntity<Ticket> getTicketByCita(@PathVariable Long id) {
         Optional<Ticket> ticket = ticketRepository.findByCitaId(id);
         return ticket.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
