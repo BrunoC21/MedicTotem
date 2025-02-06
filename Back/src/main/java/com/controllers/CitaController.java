@@ -101,7 +101,6 @@ public class CitaController {
         Optional<Cita> citaOptional = citaRepository.findById(id);
         if (citaOptional.isPresent()) {
             Cita cita = citaOptional.get();
-            cita.setEstadoTermino(true);
             cita.setEstado("Confirmado");
             citaRepository.save(cita);
             return "Estado de la cita actualizado exitosamente";
@@ -153,9 +152,9 @@ public class CitaController {
         Long profesionalId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
         List<Cita> citas = citaRepository.findByProfesionalId(profesionalId);
         return citas.stream()
-                .filter(cita -> cita.getEstadoTermino() == null || !cita.getEstadoTermino())
-                .filter(cita -> cita.getEstado().equalsIgnoreCase("Confirmado"))
-                .collect(Collectors.toList());
+            .filter(cita -> cita.getEstadoTermino() == null || !cita.getEstadoTermino())
+            .filter(cita -> cita.getEstado().equalsIgnoreCase("Confirmado"))
+            .collect(Collectors.toList());
     }
 
     // Obtener citas asignadas a la Tens logueado
