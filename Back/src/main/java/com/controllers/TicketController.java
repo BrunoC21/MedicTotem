@@ -222,6 +222,7 @@ public class TicketController {
         return estado != null && (
             estado.equals("Terminado") ||
             estado.equals("Preparado") ||
+            estado.equals("Preparacion") ||
             estado.equals("Llamado") ||
             estado.equals("Perdido") 
         );
