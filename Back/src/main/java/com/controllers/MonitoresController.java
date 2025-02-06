@@ -35,6 +35,7 @@ public class MonitoresController {
     public List<Ticket> listaTodosTicketsSector1() {
         return ticketRepository.findByTotemSector("Sector 1").stream()
                 .filter(ticket -> "Llamado".equals(ticket.getEstado()))
+                .filter(ticket -> "Preparacion".equals(ticket.getEstado()))
                 .collect(Collectors.toList());
     }
 
@@ -42,6 +43,7 @@ public class MonitoresController {
     public List<Ticket> listaTodosTickets2() {
         return ticketRepository.findByTotemSector("Sector 2").stream()
         .filter(ticket -> "Llamado".equals(ticket.getEstado()))
+        .filter(ticket -> "Preparacion".equals(ticket.getEstado()))
         .collect(Collectors.toList());
     }
 
@@ -49,6 +51,7 @@ public class MonitoresController {
     public List<Ticket> listaTodosTickets4() {
         return ticketRepository.findByTotemSector("Sector 4").stream()
         .filter(ticket -> "Llamado".equals(ticket.getEstado()))
+        .filter(ticket -> "Preparacion".equals(ticket.getEstado()))
         .collect(Collectors.toList());
     }
 
@@ -56,6 +59,7 @@ public class MonitoresController {
     public List<Ticket> listaTodosTickets5() {
         return ticketRepository.findByTotemSector("Sector 5").stream()
         .filter(ticket -> "Llamado".equals(ticket.getEstado()))
+        .filter(ticket -> "Preparacion".equals(ticket.getEstado()))
         .collect(Collectors.toList());
     }
 
