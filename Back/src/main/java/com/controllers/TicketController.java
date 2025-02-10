@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +50,7 @@ public class TicketController {
         return new ResponseEntity<>(tickets, HttpStatus.OK);
     }
 
+    //Filtra y retorna el ticket relacionado a la id
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Ticket> getTicketById(@PathVariable Long id) {
@@ -59,6 +59,7 @@ public class TicketController {
                      .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    //Filtra y retorna el ticket relacionado a la id de la cita
     @GetMapping("/estado/{id}")
     public ResponseEntity<Ticket> getTicketByCita(@PathVariable Long id) {
         Optional<Ticket> ticket = ticketRepository.findByCitaId(id);
@@ -66,6 +67,20 @@ public class TicketController {
                      .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    //Filtra y retorna el ticket relacionado al rut de la cita
+    @GetMapping("/cita/{rut}")
+    public ResponseEntity<?> getTicketsByCitaRut(@PathVariable String rut) {
+        Optional<Ticket> ticketOptional = ticketRepository.findByCitaPacienteRut(rut);
+        if (ticketOptional.isPresent()) {
+            Long ticketId = ticketOptional.get().getId();
+            return ResponseEntity.ok(ticketId);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                 .body(Map.of("error", "Ticket no encontrado para el rut: " + rut));
+        }
+    }
+
+    //Crear tickets 
     @PostMapping("/create/{id}")
     public ResponseEntity<?> createTicket(@PathVariable Long id) {
         
@@ -78,6 +93,8 @@ public class TicketController {
         Cita cita = citaOptional.get();
         String sector = cita.getSector();
 
+        /*En caso de que el sector de la cita sea transversal, llama la funcion 
+        asignarTransversal para poder asignarle uno  de los sectores principales*/
         if(sector.equals("Sector Transversal")){
             sector = asignarTransversal(cita.getTipoAtencion());
         }
@@ -106,8 +123,9 @@ public class TicketController {
     }
 
 
-    /* Funcion que se llama para poder optimisar el asiganado de totem de cada ticket
-    En caso de que la cita pertenesca al sector transversal */
+    /* Esta funcion es la que permite asignar a los sectores transversales, uno
+    de los sectores principales, dependiendo del tipo de atencion. Esto permite
+    poder asignar el ticket a uno de los totem */
     public String asignarTransversal(String tipoAtencion){
         String atencion = tipoAtencion.toLowerCase();
 
@@ -130,6 +148,7 @@ public class TicketController {
         };
     }
 
+    //Actualizar ticket, no se esta utilizando actualmente
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Ticket> updateTicket(@PathVariable Long id, @RequestBody Ticket ticketDetails) {
@@ -149,17 +168,7 @@ public class TicketController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<HttpStatus> deleteTicket(@PathVariable Long id) {
-        try {
-            ticketRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
+    //Actualizar hora de confirmacion
     @PutMapping("/updateHoraConfirmacion/{id}")
     public ResponseEntity<Ticket> updateHoraConfirmacion(@PathVariable Long id) {
         Optional<Ticket> ticket = ticketRepository.findById(id);
@@ -173,6 +182,7 @@ public class TicketController {
         }
     }
 
+    //Actualizar hora de llamada
     @PutMapping("/updateHoraLlamada/{id}")
     public ResponseEntity<Ticket> updateHoraLlamada(@PathVariable Long id) {
         Optional<Ticket> ticket = ticketRepository.findByCitaId(id);
@@ -186,6 +196,7 @@ public class TicketController {
         }
     }
 
+    //Actualizar hora de termino
     @PutMapping("/updateHoraTermino/{id}")
     public ResponseEntity<Ticket> updateHoraTermino(@PathVariable Long id) {
         Optional<Ticket> ticket = ticketRepository.findByCitaId(id);
@@ -199,6 +210,7 @@ public class TicketController {
         }
     }
 
+    //Actualizar estado del ticket
     @PutMapping("/updateEstado/{id}")
     public ResponseEntity<?> updateEstado(@PathVariable Long id, @RequestBody String estado) {
         if (!isValidEstado(estado)) {
@@ -218,6 +230,7 @@ public class TicketController {
             .body(Map.of("error", "Ticket no encontrado con ID: " + id)));
     }
 
+    //Valida que el estado sea uno de los siguientes
     private boolean isValidEstado(String estado) {
         return estado != null && (
             estado.equals("Terminado") ||
@@ -227,16 +240,5 @@ public class TicketController {
             estado.equals("Perdido") 
         );
     }
-
-    @GetMapping("/cita/{rut}")
-    public ResponseEntity<?> getTicketsByCitaRut(@PathVariable String rut) {
-        Optional<Ticket> ticketOptional = ticketRepository.findByCitaPacienteRut(rut);
-        if (ticketOptional.isPresent()) {
-            Long ticketId = ticketOptional.get().getId();
-            return ResponseEntity.ok(ticketId);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                 .body(Map.of("error", "Ticket no encontrado para el rut: " + rut));
-        }
-    }
+    
 }

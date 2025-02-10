@@ -10,6 +10,7 @@ import com.models.Box;
 
 @Repository
 public interface BoxRepository extends JpaRepository<Box, Long> {
+    @SuppressWarnings("null")
     Optional<Box> findById(Long id);
     List<Box> findByEstadoTrue();
 }

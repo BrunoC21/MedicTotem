@@ -10,6 +10,7 @@ import com.models.AsistenciaMedica;
 
 @Repository
 public interface AsistenciaRepository extends JpaRepository<AsistenciaMedica, Long> {
+    @SuppressWarnings("null")
     Optional<AsistenciaMedica> findById(Long id);
     List<AsistenciaMedica> findByProfesionalId(Long id);
     

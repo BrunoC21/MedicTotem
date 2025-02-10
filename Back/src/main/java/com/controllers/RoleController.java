@@ -32,6 +32,9 @@ public class RoleController {
         this.roleRepository = roleRepository;
     }
 
+    /*Este controlador permite modificar los roles de los usuario, en la lista
+     de usuarios, manejada por las personas con rol "ADMIN"*/
+
     @GetMapping("/user-roles/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Set<String>> getUserRoles(@PathVariable Long userId) {
