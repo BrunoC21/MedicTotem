@@ -64,6 +64,7 @@ public class ExcelController {
         }
     }
 
+    // Eliminar todos los datos
     @DeleteMapping("/eliminar-datos")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> eliminarTodosLosDatos() {

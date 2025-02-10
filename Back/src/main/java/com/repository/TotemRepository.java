@@ -9,6 +9,7 @@ import com.models.Totem;
 
 @Repository
 public interface TotemRepository extends JpaRepository<Totem, Long> {
+    @SuppressWarnings("null")
     Optional<Totem> findById(Long id);
     Optional<Totem> findBySector(String sector);
 }

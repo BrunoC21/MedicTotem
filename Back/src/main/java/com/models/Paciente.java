@@ -1,6 +1,5 @@
 package com.models;
 
-import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -43,9 +42,6 @@ public class Paciente {
 
     @OneToMany(mappedBy = "", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Cita> citas;
-
-    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CitaSimple> citasSimples;
 
     public Paciente() {
     }
@@ -124,13 +120,5 @@ public class Paciente {
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
-    }
-
-    public List<CitaSimple> getCitas() {
-        return citasSimples;
-    }
-
-    public void setCitas(List<CitaSimple> citas) {
-        this.citasSimples = citas;
     }
 }

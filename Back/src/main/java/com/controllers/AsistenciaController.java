@@ -40,6 +40,7 @@ public class AsistenciaController {
         return asistenciaRepository.findAll();
     }
 
+    //Esta funcion crea una nueva ficha de asistencia para el profesional que la solicita
     @PostMapping("/new")
     public ResponseEntity<String> crearFichaAsistencia(Authentication authentication) {
         Long profesionalId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
@@ -60,6 +61,7 @@ public class AsistenciaController {
         }
     }
 
+    //Esta funcion actualiza la fecha de termino de la ultima ficha de asistencia del profesional que la solicita
     @PutMapping("/updateFechaTermino")
     public ResponseEntity<String> actualizarFechaTermino(Authentication authentication) {
         Long profesionalId = ((UserDetailsImpl) authentication.getPrincipal()).getId();

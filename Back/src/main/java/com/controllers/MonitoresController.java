@@ -31,6 +31,9 @@ public class MonitoresController {
     }
 
     //Obtener todos los tickets
+    /* Las funciones de este controlador, son las encargadas de obtener y mostrar
+    los tickets que se muestran en las pantallas de cada sector */
+    
     @GetMapping("/Sector1")
     public List<Ticket> listaTodosTicketsSector1() {
         return ticketRepository.findByTotemSector("Sector 1").stream()

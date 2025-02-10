@@ -10,6 +10,7 @@ import com.models.Cita;
 
 @Repository
 public interface CitaRepository extends JpaRepository<Cita, Long> {
+    @SuppressWarnings("null")
     Optional<Cita> findById(Long id);
     List<Cita> findBySector(String sector);
     List<Cita> findByPacienteRutAndSector(String rut, String Sector);

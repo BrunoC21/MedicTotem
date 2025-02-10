@@ -9,6 +9,7 @@ import com.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+  @SuppressWarnings("null")
   Optional<User> findById(Long id);
 
   User findByRut(String rut);

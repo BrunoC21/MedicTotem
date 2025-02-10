@@ -99,6 +99,8 @@ public class UsuarioController {
         }
     }
 
+    /*Esta funcion es para agregar los datos personales de los usuarios desde la 
+    lista de usuarios que se encuentra en la pagina de administrador*/
     @PutMapping("/datos/{userId}")
     @PreAuthorize("hasRole('MEDICO') or hasRole('ADMIN')")
     public ResponseEntity<User> actualizarDatosPersonales(@PathVariable Long userId, @RequestBody User usuarioActualizado) {
@@ -117,6 +119,8 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
+    /*Con esta funcion actualizamos el box en el que se encuentre la persona
+    logueada, para ello se debe enviar el id del box que se desea asignar al usuario*/
     @PutMapping("/actualizarBox/{boxId}")
     public ResponseEntity<String> actualizarBoxUsuarioLogueado(@PathVariable Long boxId, Authentication authentication) {
         Long usuarioId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
@@ -135,6 +139,7 @@ public class UsuarioController {
         }
     }
 
+    /*Con esta funcion liberamos el box en el que se encuentre la persona*/
     @PutMapping("/liberarBox/{boxId}")
     public ResponseEntity<String> LiberarBoxUsuarioLogueado(@PathVariable Long boxId, Authentication authentication) {
         Long usuarioId = ((UserDetailsImpl) authentication.getPrincipal()).getId();

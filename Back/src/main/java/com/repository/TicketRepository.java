@@ -11,6 +11,7 @@ import com.models.Ticket;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
+    @SuppressWarnings("null")
     Optional<Ticket> findById(Long id);
     Optional <Ticket> findByCitaId(Long id);
     Optional <Ticket> findByCitaPacienteRut(String rut);

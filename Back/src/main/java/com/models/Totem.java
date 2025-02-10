@@ -60,4 +60,8 @@ public class Totem {
     public void countNroTicket() {
         this.nroTicket++;
     }
+
+    public void resetNroTicket() {
+        this.nroTicket = 1;
+    }
 }
