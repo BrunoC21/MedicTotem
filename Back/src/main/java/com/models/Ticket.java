@@ -3,6 +3,7 @@ package com.models;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,6 +47,9 @@ public class Ticket {
     @OneToOne
     @JoinColumn(name = "cita_id")
     private Cita cita;
+
+    @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
+    private registroTens registroTens;
 
     public Ticket() {
     }
@@ -128,5 +132,13 @@ public class Ticket {
 
     public void setTotem(Totem totem) {
         this.totem = totem;
+    }
+
+    public registroTens getRegistroTens() {
+        return registroTens;
+    }
+
+    public void setRegistroTens(registroTens registroTens) {
+        this.registroTens = registroTens;
     }
 }

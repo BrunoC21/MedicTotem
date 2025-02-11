@@ -102,7 +102,8 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
               .requestMatchers("/api/ticket/create/{id}").permitAll()
               .requestMatchers("/api/monitores/**").permitAll()
               .requestMatchers("/api/excel/**").permitAll() 
-              .requestMatchers("/api/totem/**").permitAll() 
+              .requestMatchers("/api/totem/**").permitAll()
+              .requestMatchers("/api/tens/**").permitAll()  
               .anyRequest().authenticated()
         );
     
