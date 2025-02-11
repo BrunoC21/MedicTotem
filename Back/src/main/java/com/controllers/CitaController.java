@@ -1,5 +1,6 @@
 package com.controllers;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -48,8 +49,16 @@ public class CitaController {
     /*Este se ocupa para obtener las citas de los sectores principales 
     siendo, Sector 1, 2, 4, 5 y Dental*/
     @GetMapping("/paciente/{rut}/{sector}")
-    public List<Cita> obtenerCitasPorRutPaciente(@PathVariable String rut, @PathVariable String sector) {
-        return citaRepository.findByPacienteRutAndSector(rut, "Sector " + sector);
+    public ResponseEntity<List<Cita>> obtenerCitasPorRutPaciente(@PathVariable String rut, @PathVariable String sector) {
+        List<Cita> citas = citaRepository.findByPacienteRutAndSector(rut, "Sector " + sector);
+    
+        LocalDate hoy = LocalDate.now();
+        
+        List<Cita> citasHoy = citas.stream()
+            .filter(cita -> cita.getFechaCita().equals(hoy))
+            .collect(Collectors.toList());
+        
+        return ResponseEntity.ok(citasHoy);
     }
 
     //Obtener una cita por su rut del paciente y tipo de atencion
@@ -59,7 +68,14 @@ public class CitaController {
     @GetMapping("/tipos/{rut}")
     public ResponseEntity<List<Cita>> obtenerCitasPorRutYTipos(@RequestParam String rut, @RequestParam List<String> tipos) {
         List<Cita> citas = citaRepository.findByPacienteRutAndTipoAtencionIn(rut, tipos);
-        return ResponseEntity.ok(citas);
+
+        LocalDate hoy = LocalDate.now();
+        
+        List<Cita> citasHoy = citas.stream()
+            .filter(cita -> cita.getFechaCita().equals(hoy))
+            .collect(Collectors.toList());
+        
+        return ResponseEntity.ok(citasHoy);
     }
 
     //Actualiza el estado de la cita
