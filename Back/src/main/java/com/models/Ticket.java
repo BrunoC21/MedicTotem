@@ -3,6 +3,8 @@ package com.models;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,9 +39,6 @@ public class Ticket {
     @Column(name = "Fecha")
     private LocalDate fecha;
 
-    @Column(name = "nombre")
-    private String nombre;
-
     @ManyToOne
     @JoinColumn(name = "totem_id")
     private Totem totem;
@@ -48,20 +47,23 @@ public class Ticket {
     @JoinColumn(name = "cita_id")
     private Cita cita;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
     private registroTens registroTens;
 
     public Ticket() {
     }
 
-    public Ticket(Long id, String estado, LocalTime hora_confirmacion, LocalTime hora_llamada, LocalTime hora_termino, LocalDate fecha, String nombre, Totem totem, Cita cita) {
+    public Ticket(Long id, String estado, LocalTime hora_confirmacion, 
+                    LocalTime hora_llamada, LocalTime hora_termino, LocalDate fecha, 
+                        Totem totem, Cita cita) {
+                            
         this.id = id;
         this.estado = estado;
         this.hora_confirmacion = hora_confirmacion;
         this.hora_llamada = hora_llamada;
         this.hora_termino = hora_termino;
         this.fecha = fecha;
-        this.nombre = nombre;
         this.totem = totem;
         this.cita = cita;
     }
@@ -110,14 +112,6 @@ public class Ticket {
         this.fecha = fecha;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
     public Cita getCita() {
         return cita;
     }
@@ -136,9 +130,5 @@ public class Ticket {
 
     public registroTens getRegistroTens() {
         return registroTens;
-    }
-
-    public void setRegistroTens(registroTens registroTens) {
-        this.registroTens = registroTens;
     }
 }

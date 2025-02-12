@@ -2,6 +2,8 @@ package com.models;
 
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +33,7 @@ public class registroTens {
     @Column(name = "rut")
     private String rut;
 
+    @JsonBackReference
     @OneToOne
     @JoinColumn(name = "ticket_id", referencedColumnName = "id")
     private Ticket ticket;
