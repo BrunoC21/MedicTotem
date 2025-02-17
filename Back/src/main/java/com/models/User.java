@@ -57,8 +57,8 @@ public class User {
   @Column(name = "apellido")
   private String apellido;
 
-  @Column(name = "direccion")
-  private String direccion;
+  @Column(name = "instrumento")
+  private String instrumento;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "user_roles", 
@@ -150,12 +150,12 @@ public class User {
     this.apellido = apellido;
   }
 
-  public String getDireccion(){
-    return direccion;
+  public String getInstrumento(){
+    return instrumento;
   }
 
-  public void setDireccion(String direccion){
-    this.direccion = direccion;
+  public void setDireccion(String instrumento){
+    this.instrumento = instrumento;
   }
 
   public Box getBox(){

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -93,6 +94,34 @@ public class CitaController {
         
         return ResponseEntity.ok(citasHoy);
     }
+    
+    //Obtener una cita por el id del medico
+    @GetMapping("/medico/{idProfesional}")
+    public ResponseEntity<List<Cita>> obtenerCitasProfesional(@PathVariable Long idProfesional){
+        List<Cita> citas = citaRepository.findByProfesionalId(idProfesional);
+
+        LocalDate hoy = LocalDate.now();
+        List<Cita> citasHoy = citas.stream()
+            .filter(cita -> cita.getFechaCita().equals(hoy))
+            .collect(Collectors.toList());
+        
+        return ResponseEntity.ok(citasHoy);
+    }
+
+    //Actualizar medico asociado a la cita
+    @PutMapping("/actualizarMedico/{idProfesional}/{idCita}")
+    public void actualizarProfesional(Long idProfesional, Long idCita) {
+        Optional<Cita> citaOptional = citaRepository.findById(idCita);
+
+        if (citaOptional.isPresent()) {
+            Cita cita = citaOptional.get();
+            User profesional = userRepository.findById(idProfesional)
+                .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
+            cita.setProfesional(profesional);
+            citaRepository.save(cita);
+        }
+    }
+
 
     //Actualiza el estado de la cita
     /*Actualiza el estado de la cita, para pasar a confirmado, momento en el que es entregado
@@ -220,51 +249,64 @@ public class CitaController {
 
     @PostMapping("/crear")
     public ResponseEntity<?> crearCita(@RequestBody CrearCitaDto citaDTO, Authentication authentication) {
-        Long usuarioId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
-        User user = userRepository.findById((usuarioId))
-            .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
+        try {
+            // Validar datos de entrada
+            if (citaDTO == null || citaDTO.getIdMedico() == null) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Datos incompletos o ID del médico nulo"));
+            }
 
-        // Buscar o crear paciente
-        Paciente paciente = pacienteRepository.findByRut(citaDTO.getRutPaciente())
-            .orElseGet(() -> {
-            Paciente nuevoPaciente = new Paciente(
-                citaDTO.getRutPaciente(),
-                citaDTO.getDvPaciente(),
-                citaDTO.getNombrePaciente(),
-                citaDTO.getApellidoPaternoPaciente(),
-                citaDTO.getApellidoMaternoPaciente(),
-                citaDTO.getSexo()
-            );
-            return pacienteRepository.save(nuevoPaciente);
-        });
+            Long usuarioId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+            User user = userRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-         
-        //Buscar profesional
-        User profesional = userRepository.findById(citaDTO.getIdProfecional())
-            .orElseThrow(() -> new RuntimeException("Profesional no encontrado")
-        );
-        
-        // Crear cita
-        Cita cita = new Cita();
-        cita.setEstado("Agendado");
-        cita.setTipoAtencion(citaDTO.getTipoAtencion());
-        cita.setInstrumento(citaDTO.getInstrumento());
-        cita.setHoraCita(citaDTO.getHoraCita());
-        cita.setFechaCita(citaDTO.getFechaCita());
-        cita.setSector(citaDTO.getSector());
-        cita.setAgendador((user.getNombre() + " " + user.getApellido()));
-        cita.setProfesional(profesional);
-        cita.setPaciente(paciente);
-        cita.setEstadoLlamado(false);
-        cita.setEstadoTermino(false);
+            // Buscar o crear paciente
+            Paciente paciente = pacienteRepository.findByRut(citaDTO.getRutPaciente())
+                .orElseGet(() -> {
+                    Paciente nuevoPaciente = new Paciente(
+                        citaDTO.getRutPaciente(),
+                        citaDTO.getDvPaciente(),
+                        citaDTO.getNombrePaciente(),
+                        citaDTO.getApellidoPaternoPaciente(),
+                        citaDTO.getApellidoMaternoPaciente(),
+                        citaDTO.getSexo()
+                    );
+                    return pacienteRepository.save(nuevoPaciente);
+                });
+            
+            // Buscar profesional usando idMedico en lugar de idProfecional
+            User profesional = userRepository.findById(citaDTO.getIdMedico())
+                .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
+            
+            // Crear cita
+            Cita cita = new Cita();
+            cita.setEstado("Agendado");
+            cita.setTipoAtencion(citaDTO.getTipoAtencion());
+            cita.setHoraCita(citaDTO.getHoraCita());
+            cita.setFechaCita(citaDTO.getFechaCita());
+            cita.setSector("Sector " + citaDTO.getSector());
+            cita.setAgendador(user.getNombre() + " " + user.getApellido());
+            cita.setProfesional(profesional);
+            cita.setPaciente(paciente);
+            cita.setEstadoLlamado(false);
+            cita.setEstadoTermino(false);
 
-        citaRepository.save(cita);
+            Cita citaGuardada = citaRepository.save(cita);
 
-        return ResponseEntity.ok()
-            .body(Map.of("mensaje", "Cita creada exitosamente", 
-                "citaId", cita.getId()));
+            return ResponseEntity.ok()
+                .body(Map.of(
+                    "mensaje", "Cita creada exitosamente", 
+                    "citaId", citaGuardada.getId()
+                ));
 
+        } catch (Exception e) {
+            e.printStackTrace(); // Para debug
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Error al crear la cita: " + e.getMessage()));
+        }
     }
+
+
 
     
 

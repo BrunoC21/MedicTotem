@@ -4,18 +4,11 @@ import java.sql.Time;
 import java.time.LocalDate;
 
 public class CrearCitaDto {
-    private String estado;
     private String tipoAtencion;
-    private String instrumento;
     private Time horaCita;
     private LocalDate fechaCita;
     private String sector;
-    private String agendador;
-
-    // Datos del profecional
-    private Long idProfecional;
-    
-    // Datos del paciente
+    private Long idMedico; // Cambiado de idProfecional a idMedico
     private String rutPaciente;
     private String dvPaciente;
     private String nombrePaciente;
@@ -26,20 +19,12 @@ public class CrearCitaDto {
     public CrearCitaDto() {
     }
 
-    public Long getIdProfecional() {
-        return idProfecional;
+    public Long getIdMedico() {
+        return idMedico;
     }
 
-    public void setIdProfecional(Long idProfecional) {
-        this.idProfecional = idProfecional;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setIdMedico(Long idMedico) {
+        this.idMedico = idMedico;
     }
 
     public String getTipoAtencion() {
@@ -49,15 +34,7 @@ public class CrearCitaDto {
     public void setTipoAtencion(String tipoAtencion) {
         this.tipoAtencion = tipoAtencion;
     }
-
-    public String getInstrumento() {
-        return instrumento;
-    }
-
-    public void setInstrumento(String instrumento) {
-        this.instrumento = instrumento;
-    }
-
+    
     public Time getHoraCita() {
         return horaCita;
     }
@@ -80,14 +57,6 @@ public class CrearCitaDto {
 
     public void setSector(String sector) {
         this.sector = sector;
-    }
-
-    public String getAgendador() {
-        return agendador;
-    }
-
-    public void setAgendador(String agendador) {
-        this.agendador = agendador;
     }
 
     public String getRutPaciente() {
