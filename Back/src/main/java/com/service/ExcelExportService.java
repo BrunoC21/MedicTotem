@@ -75,7 +75,7 @@ public class ExcelExportService {
         for (Ticket ticket : tickets) {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(ticket.getId());
-            row.createCell(1).setCellValue(ticket.getCita().getInstrumento());
+            row.createCell(1).setCellValue(ticket.getCita().getProfesional().getInstrumento());
             row.createCell(2).setCellValue(ticket.getCita().getTipoAtencion());
             row.createCell(3).setCellValue(ticket.getEstado());
             row.createCell(4).setCellValue(ticket.getFecha().toString());
