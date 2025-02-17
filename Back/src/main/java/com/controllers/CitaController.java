@@ -3,6 +3,7 @@ package com.controllers;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -11,13 +12,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Dto.CrearCitaDto;
 import com.models.Cita;
+import com.models.Paciente;
+import com.models.User;
 import com.repository.CitaRepository;
+import com.repository.PacienteRepository;
+import com.repository.UserRepository;
 import com.security.services.UserDetailsImpl;
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials = "true")
@@ -26,9 +34,16 @@ import com.security.services.UserDetailsImpl;
 public class CitaController {
 
     private final CitaRepository citaRepository;
+    private final PacienteRepository pacienteRepository;
+    private final UserRepository userRepository;
 
-    public CitaController(CitaRepository citaRepository) {
+    public CitaController(CitaRepository citaRepository
+                            ,PacienteRepository pacienteRepository
+                                ,UserRepository userRepository) {
+
         this.citaRepository = citaRepository;
+        this.pacienteRepository = pacienteRepository;
+        this.userRepository = userRepository;
     }
 
     //Obtener todas las citas
@@ -56,6 +71,7 @@ public class CitaController {
         
         List<Cita> citasHoy = citas.stream()
             .filter(cita -> cita.getFechaCita().equals(hoy))
+            .filter(cita -> cita.getEstado().equals("Agendado"))
             .collect(Collectors.toList());
         
         return ResponseEntity.ok(citasHoy);
@@ -201,6 +217,56 @@ public class CitaController {
         List<Cita> citasProfesional = citaRepository.findByProfesionalId(profesionalId);
         return ResponseEntity.ok(citasProfesional);
     }
+
+    @PostMapping("/crear")
+    public ResponseEntity<?> crearCita(@RequestBody CrearCitaDto citaDTO, Authentication authentication) {
+        Long usuarioId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+        User user = userRepository.findById((usuarioId))
+            .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
+
+        // Buscar o crear paciente
+        Paciente paciente = pacienteRepository.findByRut(citaDTO.getRutPaciente())
+            .orElseGet(() -> {
+            Paciente nuevoPaciente = new Paciente(
+                citaDTO.getRutPaciente(),
+                citaDTO.getDvPaciente(),
+                citaDTO.getNombrePaciente(),
+                citaDTO.getApellidoPaternoPaciente(),
+                citaDTO.getApellidoMaternoPaciente(),
+                citaDTO.getSexo()
+            );
+            return pacienteRepository.save(nuevoPaciente);
+        });
+
+         
+        //Buscar profesional
+        User profesional = userRepository.findById(citaDTO.getIdProfecional())
+            .orElseThrow(() -> new RuntimeException("Profesional no encontrado")
+        );
+        
+        // Crear cita
+        Cita cita = new Cita();
+        cita.setEstado("Agendado");
+        cita.setTipoAtencion(citaDTO.getTipoAtencion());
+        cita.setInstrumento(citaDTO.getInstrumento());
+        cita.setHoraCita(citaDTO.getHoraCita());
+        cita.setFechaCita(citaDTO.getFechaCita());
+        cita.setSector(citaDTO.getSector());
+        cita.setAgendador((user.getNombre() + " " + user.getApellido()));
+        cita.setProfesional(profesional);
+        cita.setPaciente(paciente);
+        cita.setEstadoLlamado(false);
+        cita.setEstadoTermino(false);
+
+        citaRepository.save(cita);
+
+        return ResponseEntity.ok()
+            .body(Map.of("mensaje", "Cita creada exitosamente", 
+                "citaId", cita.getId()));
+
+    }
+
+    
 
 
 

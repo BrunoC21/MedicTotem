@@ -1,6 +1,7 @@
 package com.service;
 
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -57,10 +58,10 @@ public class ExcelExportService {
         // Crear cabeceras
         Row headerRow = sheet.createRow(0);
         String[] columns = {
-            "ID", "TipoAtencion","Estado", "Fecha", "HoraConfirmacion", "HoraLlamado", "HoraTermino",
-            "Rut", "Dv", "Nombre", "Apellido Paterno", "Apellido Materno", "Rut Profesional",
+            "ID","Especialidad", "TipoAtencion","Estado", "Fecha", "HoraConfirmacion", "HoraLlamado", "HoraTermino",
+            "tiempoEsperaMedico", "duracionAtencion", "Rut", "Dv", "Nombre", "Apellido Paterno", "Apellido Materno", "Rut Profesional",
             "Nombre Profesional", "Apellido Profesional", "TENS Nombre", "TENS Rut", 
-            "TENS Hora Inicio", "TENS Hora Termino", "Agendador", "Sector",
+            "TENS Hora Inicio", "TENS Hora Termino", "tiempoPreparacion", "Agendador", "Sector",
         };
 
         for (int i = 0; i < columns.length; i++) {
@@ -71,45 +72,80 @@ public class ExcelExportService {
         
         // Llenar datos
         int rowNum = 1;
-        for(Ticket ticket: tickets) {
+        for (Ticket ticket : tickets) {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(ticket.getId());
-            row.createCell(1).setCellValue(ticket.getCita().getTipoAtencion());
-            row.createCell(2).setCellValue(ticket.getEstado());
-            row.createCell(3).setCellValue(ticket.getFecha().toString());
-            row.createCell(4).setCellValue(ticket.getHora_confirmacion() != null ? 
-                    ticket.getHora_confirmacion().toString() : "");
-            row.createCell(5).setCellValue(ticket.getHora_llamada() != null ? 
-                    ticket.getHora_llamada().toString() : "");
-            row.createCell(6).setCellValue(ticket.getHora_termino() != null ? 
-                    ticket.getHora_termino().toString() : "");
-            row.createCell(7).setCellValue(ticket.getCita().getPaciente().getRut());   
-            row.createCell(8).setCellValue(ticket.getCita().getPaciente().getDv());     
-            row.createCell(9).setCellValue(ticket.getCita().getPaciente().getNombre());
-            row.createCell(10).setCellValue(ticket.getCita().getPaciente().getApellido());
-            row.createCell(11).setCellValue(ticket.getCita().getPaciente().getApellidoMaterno());
-            row.createCell(12).setCellValue(ticket.getCita().getProfesional().getRut());    
-            row.createCell(13).setCellValue(ticket.getCita().getProfesional().getNombre());
-            row.createCell(14).setCellValue(ticket.getCita().getProfesional().getApellido());
-            
-            if (ticket.getRegistroTens() != null) {
-                row.createCell(15).setCellValue(ticket.getRegistroTens().getNombre());
-                row.createCell(16).setCellValue(ticket.getRegistroTens().getRut());
-                row.createCell(17).setCellValue(ticket.getRegistroTens().getHoraInicio() != null ? 
-                    ticket.getRegistroTens().getHoraInicio().toString() : "");
-                row.createCell(18).setCellValue(ticket.getRegistroTens().getHoraTermino() != null ? 
-                    ticket.getRegistroTens().getHoraTermino().toString() : "");
+            row.createCell(1).setCellValue(ticket.getCita().getInstrumento());
+            row.createCell(2).setCellValue(ticket.getCita().getTipoAtencion());
+            row.createCell(3).setCellValue(ticket.getEstado());
+            row.createCell(4).setCellValue(ticket.getFecha().toString());
+            row.createCell(5).setCellValue(ticket.getHora_confirmacion() != null ? 
+            ticket.getHora_confirmacion().toString() : "");
+            row.createCell(6).setCellValue(ticket.getHora_llamada() != null ? 
+            ticket.getHora_llamada().toString() : "");
+            row.createCell(7).setCellValue(ticket.getHora_termino() != null ? 
+            ticket.getHora_termino().toString() : "");
+
+            if (ticket.getHora_confirmacion() != null && ticket.getHora_llamada() != null) {
+                long espera = ChronoUnit.SECONDS.between(ticket.getHora_confirmacion(), ticket.getHora_llamada());
+                String tiempoFormateado = String.format("%02d:%02d",   
+                    espera / 60,    // minutos
+                    espera % 60              // segundos
+                );
+                row.createCell(8).setCellValue(tiempoFormateado);
             } else {
-                row.createCell(15).setCellValue("");
-                row.createCell(16).setCellValue("");
-                row.createCell(17).setCellValue("");
-                row.createCell(18).setCellValue("");
+                row.createCell(8).setCellValue("");
             }
 
-            row.createCell(19).setCellValue(ticket.getCita().getAgendador());   
-            row.createCell(20).setCellValue(ticket.getTotem().getSector());
+            if (ticket.getHora_llamada() != null && ticket.getHora_termino() != null) {
+                long atencion = ChronoUnit.SECONDS.between(ticket.getHora_llamada(), ticket.getHora_termino());
+                String tiempoFormateado2 = String.format("%02d:%02d",
+                    atencion / 60,    // minutos
+                    atencion % 60              // segundos
+                );
+                row.createCell(9).setCellValue(tiempoFormateado2);
+            } else {
+                row.createCell(9).setCellValue("");
+            }
+
+            row.createCell(10).setCellValue(ticket.getCita().getPaciente().getRut());
+            row.createCell(11).setCellValue(ticket.getCita().getPaciente().getDv());
+            row.createCell(12).setCellValue(ticket.getCita().getPaciente().getNombre());
+            row.createCell(13).setCellValue(ticket.getCita().getPaciente().getApellido());
+            row.createCell(14).setCellValue(ticket.getCita().getPaciente().getApellidoMaterno());
+            row.createCell(15).setCellValue(ticket.getCita().getProfesional().getRut());
+            row.createCell(16).setCellValue(ticket.getCita().getProfesional().getNombre());
+            row.createCell(17).setCellValue(ticket.getCita().getProfesional().getApellido());
+
+            if (ticket.getRegistroTens() != null) {
+            row.createCell(18).setCellValue(ticket.getRegistroTens().getNombre());
+            row.createCell(19).setCellValue(ticket.getRegistroTens().getRut());
+            row.createCell(20).setCellValue(ticket.getRegistroTens().getHoraInicio() != null ? 
+                ticket.getRegistroTens().getHoraInicio().toString() : "");
+            row.createCell(21).setCellValue(ticket.getRegistroTens().getHoraTermino() != null ? 
+                ticket.getRegistroTens().getHoraTermino().toString() : "");
+
+            if (ticket.getRegistroTens().getHoraInicio() != null && ticket.getRegistroTens().getHoraTermino() != null) {
+                long tens = ChronoUnit.SECONDS.between(ticket.getRegistroTens().getHoraInicio(), ticket.getRegistroTens().getHoraTermino());
+                String tiempoFormateado3 = String.format("%02d:%02d", 
+                    tens / 60,    // minutos
+                    tens % 60              // segundos
+                );
+                row.createCell(22).setCellValue(tiempoFormateado3);
+            } else {
+                row.createCell(22).setCellValue("");
+            }
+            } else {
+            row.createCell(18).setCellValue("");
+            row.createCell(19).setCellValue("");
+            row.createCell(20).setCellValue("");
+            row.createCell(21).setCellValue("");
+            row.createCell(22).setCellValue("");
+            }
+
+            row.createCell(23).setCellValue(ticket.getCita().getAgendador());
+            row.createCell(24).setCellValue(ticket.getTotem().getSector());
         }
-        
         // Autoajustar columnas
         for(int i = 0; i < columns.length; i++) {
             sheet.autoSizeColumn(i);

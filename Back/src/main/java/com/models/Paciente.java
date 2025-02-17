@@ -46,16 +46,14 @@ public class Paciente {
     public Paciente() {
     }
 
-    public Paciente(Long id, String rut, String dv, String nombre, String apellidoPaterno, 
-                        String apellidoMaterno, String sexo, String direccion) {
-        this.id = id;
+    public Paciente(String rut, String dv, String nombre, String apellidoPaterno, 
+                        String apellidoMaterno, String sexo) {
         this.rut = rut;
         this.dv = dv;
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.sexo = sexo;
-        this.direccion = direccion;
     }
 
     public Long getIdPaciente() {

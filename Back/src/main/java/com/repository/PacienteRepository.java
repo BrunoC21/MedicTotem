@@ -12,6 +12,6 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
     @SuppressWarnings("null")
     Optional<Paciente> findById(Long id);
 
-    Paciente findByRut(String rut);
+    Optional<Paciente> findByRut(String rut);
 
 }
