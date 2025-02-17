@@ -306,12 +306,18 @@ public class CitaController {
         }
     }
 
+    @PutMapping("/transferirCitas/{idCita}/{idProfesionalReceptor}")
+public ResponseEntity<?> transferirCitas(@PathVariable Long idCita, @PathVariable Long idProfesionalReceptor) {
+    Cita cita = citaRepository.findById(idCita)
+                              .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+    User profesionalReceptor = userRepository.findById(idProfesionalReceptor)
+                                             .orElseThrow(() -> new RuntimeException("Profesional receptor no encontrado"));
 
+    cita.setProfesional(profesionalReceptor);
+    citaRepository.save(cita);
 
-    
-
-
-
+    return ResponseEntity.ok(Map.of("mensaje", "Profesional de la cita actualizado exitosamente", "citaId", cita.getId()));
+}
 
 }
 

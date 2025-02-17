@@ -145,17 +145,4 @@ public class UsuarioController {
         }
     }
 
-    @PutMapping("/transferirCitas/{usuarioOrigenId}/{usuarioDestinoId}")
-    public ResponseEntity<?> transferirCitas(@PathVariable Long usuarioOrigenId, @PathVariable Long usuarioDestinoId) {
-        User usuarioOrigen = userRepository.findById(usuarioOrigenId)
-                                           .orElseThrow(() -> new RuntimeException("Usuario origen no encontrado"));
-        User usuarioDestino = userRepository.findById(usuarioDestinoId)
-                                            .orElseThrow(() -> new RuntimeException("Usuario destino no encontrado"));
-
-        List<Cita> citasUsuarioOrigen = citaRepository.findByProfesionalId(usuarioOrigenId);
-        citasUsuarioOrigen.forEach(cita -> cita.setProfesional(usuarioDestino));
-        citaRepository.saveAll(citasUsuarioOrigen);
-
-        return ResponseEntity.ok(Map.of("mensaje", "Citas transferidas exitosamente", "cantidadCitas", citasUsuarioOrigen.size()));
-    }
 }
