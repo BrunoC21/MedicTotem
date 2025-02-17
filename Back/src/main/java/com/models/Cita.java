@@ -26,6 +26,9 @@ public class Cita {
     @Column(name = "tipo_atencion")
     private String tipoAtencion;
 
+    @Column(name = "instrumento")
+    private String instrumento;
+
     @Column(name = "Agendador")
     private String agendador;
 
@@ -55,7 +58,7 @@ public class Cita {
     public Cita() {
     }
 
-    public Cita(Long id, String estado, String tipoAtencion, Time horaCita, 
+    public Cita(Long id, String estado, String instrumento, String tipoAtencion, Time horaCita, 
                 LocalDate fechaCita, String sector, Boolean estado_llamado, 
                 Boolean estado_termino, User profesional, Paciente paciente, String agendador) {
         this.id = id;
@@ -69,6 +72,7 @@ public class Cita {
         this.profesional = profesional;
         this.paciente = paciente;
         this.agendador = agendador;
+        this.instrumento = instrumento;
     }
 
     public Long getId() {
@@ -83,6 +87,13 @@ public class Cita {
         this.estado = estado;
     }
 
+    public String getInstrumento() {
+        return instrumento;
+    }
+
+    public void setInstrumento(String instrumento) {
+        this.instrumento = instrumento;
+    }
     public String getTipoAtencion() {
         return tipoAtencion;
     }
