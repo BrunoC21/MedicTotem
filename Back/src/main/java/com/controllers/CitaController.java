@@ -53,13 +53,6 @@ public class CitaController {
         return citaRepository.findAll();
     }
 
-    //Obtener una cita por su id
-    @GetMapping("/cita/{id}")
-    public Cita obtenerCitaPorId(@PathVariable Long id) {
-        return citaRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
-    }
-
     //Obtener una cita por su rut del paciente
     /*Implementado pero no ocupado en el front */
     @GetMapping("/paciente/{rutPaciente}")
@@ -312,5 +305,18 @@ public class CitaController {
                 .body(Map.of("error", "Error al crear la cita: " + e.getMessage()));
         }
     }
-}
 
+    @PutMapping("/transferirCitas/{idCita}/{idProfesionalReceptor}")
+    public ResponseEntity<?> transferirCitas(@PathVariable Long idCita, @PathVariable Long idProfesionalReceptor) {
+        Cita cita = citaRepository.findById(idCita)
+                                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+        User profesionalReceptor = userRepository.findById(idProfesionalReceptor)
+                                                .orElseThrow(() -> new RuntimeException("Profesional receptor no encontrado"));
+
+        cita.setProfesional(profesionalReceptor);
+        citaRepository.save(cita);
+
+        return ResponseEntity.ok(Map.of("mensaje", "Profesional de la cita actualizado exitosamente", "citaId", cita.getId()));
+    }
+
+}
