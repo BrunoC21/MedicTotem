@@ -1,5 +1,6 @@
 package com.controllers;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,6 +61,23 @@ public class MonitoresController {
         return ticketRepository.findByTotemSector("Sector 5").stream()
         .filter(ticket -> "Llamado".equals(ticket.getEstado()) || "Preparacion".equals(ticket.getEstado()))
         .collect(Collectors.toList());
+    }
+
+    @GetMapping("/Casa4")
+    public List<Ticket> listaTodosTicketCasa4() {
+        List<String> tiposPermitidos = Arrays.asList(
+            "Oftalmología",
+            "Control Rehabilitación",
+            "REHABILITACION PULMONAR",
+            "Ingreso Rehabilitación",
+            "EGRESO REHABILITACIÓN"
+        );
+
+        return ticketRepository.findByTotemSector("Sector 5").stream()
+            .filter(ticket -> "Llamado".equals(ticket.getEstado()) || 
+                            "Preparacion".equals(ticket.getEstado()))
+            .filter(ticket -> tiposPermitidos.contains(ticket.getCita().getTipoAtencion()))
+            .collect(Collectors.toList());
     }
 
     @GetMapping("/SectorDental")
