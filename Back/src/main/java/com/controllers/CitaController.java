@@ -53,6 +53,13 @@ public class CitaController {
         return citaRepository.findAll();
     }
 
+    //Obtener una cita por su id
+    @GetMapping("/cita/{id}")
+    public Cita obtenerCitaPorId(@PathVariable Long id) {
+        return citaRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+    }
+
     //Obtener una cita por su rut del paciente
     /*Implementado pero no ocupado en el front */
     @GetMapping("/paciente/{rutPaciente}")
@@ -305,13 +312,5 @@ public class CitaController {
                 .body(Map.of("error", "Error al crear la cita: " + e.getMessage()));
         }
     }
-
-
-
-    
-
-
-
-
 }
 
