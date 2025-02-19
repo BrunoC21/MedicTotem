@@ -13,7 +13,9 @@ import com.models.User;
 public interface UserRepository extends JpaRepository<User, Long> {
   @SuppressWarnings("null")
   Optional<User> findById(Long id);
-
+  
+  List<User> findByRoles_Name(String roleName);
+    
   List<User> findByInstrumento(String instrumento);
   User findByRut(String rut);
 
