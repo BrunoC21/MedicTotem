@@ -1,7 +1,6 @@
 package com.controllers;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -19,10 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.models.Box;
-import com.models.Cita;
 import com.models.User;
 import com.repository.BoxRepository;
-import com.repository.CitaRepository;
 import com.repository.UserRepository;
 import com.security.services.UserDetailsImpl;
 
@@ -33,13 +30,11 @@ public class UsuarioController {
 
     private final UserRepository userRepository;
     private final BoxRepository boxRepository;
-    private final CitaRepository citaRepository;
     private final PasswordEncoder encoder;
 
-    public UsuarioController(UserRepository userRepository, BoxRepository boxRepository, CitaRepository citaRepository, PasswordEncoder encoder) {
+    public UsuarioController(UserRepository userRepository, BoxRepository boxRepository, PasswordEncoder encoder) {
         this.userRepository = userRepository;
         this.boxRepository = boxRepository;
-        this.citaRepository = citaRepository;
         this.encoder = encoder;
     }
 
@@ -48,6 +43,12 @@ public class UsuarioController {
     public ResponseEntity<List<User>> listarUsuarios() {
         List<User> usuarios = userRepository.findAll();
         return new ResponseEntity<>(usuarios, HttpStatus.OK);
+    }
+
+    @GetMapping("/medicos")
+    public ResponseEntity<List<User>> listarMedicos() {
+        List<User> medicos = userRepository.findByRoles_Name("MEDICO");
+        return new ResponseEntity<>(medicos, HttpStatus.OK);
     }
 
     @GetMapping("/{userId}")

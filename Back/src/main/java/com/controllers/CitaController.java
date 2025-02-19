@@ -1,5 +1,6 @@
 package com.controllers;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Dto.ActualizarCitaDto;
 import com.Dto.CrearCitaDto;
 import com.models.Cita;
 import com.models.Paciente;
@@ -53,6 +55,13 @@ public class CitaController {
         return citaRepository.findAll();
     }
 
+    @GetMapping("/cita/{id}")
+    public ResponseEntity<Cita> getCitaId(@PathVariable Long id) {
+        Cita cita = citaRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+        return ResponseEntity.ok(cita);
+    }
+    
     //Obtener una cita por su rut del paciente
     /*Implementado pero no ocupado en el front */
     @GetMapping("/paciente/{rutPaciente}")
@@ -306,8 +315,10 @@ public class CitaController {
         }
     }
 
+    //Metodo hecho para poder transferir las citas de un profesional a otro
+    /*Esta funcion es utilizada solamente por los administradores, especificamente
+    en este caso, por las personas de tens*/
     @PutMapping("/transferirCitas/{idCita}/{idProfesionalReceptor}")
-
     public ResponseEntity<?> transferirCitas(@PathVariable Long idCita, @PathVariable Long idProfesionalReceptor) {
         Cita cita = citaRepository.findById(idCita)
                                 .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
@@ -318,5 +329,59 @@ public class CitaController {
         citaRepository.save(cita);
 
         return ResponseEntity.ok(Map.of("mensaje", "Profesional de la cita actualizado exitosamente", "citaId", cita.getId()));
+    }
+
+    //Metodo para actualizar profesional, tipoAtencion, Sector y hora de la cita y fecha
+    @PutMapping("/actualizar")
+    public ResponseEntity<?> actualizarCita(@RequestBody ActualizarCitaDto actualizarCitaDto, Authentication authentication) {
+        try {
+            // Buscar la cita
+            Cita cita = citaRepository.findById(actualizarCitaDto.getIdCita())
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+
+            // Actualizar profesional si se proporciona
+            if (actualizarCitaDto.getIdMedico() != null) {
+                User profesional = userRepository.findById(actualizarCitaDto.getIdMedico())
+                    .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
+                cita.setProfesional(profesional);
+            }
+            
+            // Actualizar sector si se proporciona
+            if (actualizarCitaDto.getSector() != null) {
+                cita.setSector(actualizarCitaDto.getSector());
+            }
+
+            // Actualizar hora si se proporciona
+            if (actualizarCitaDto.getHoraCita() != null) {
+                try {
+                    // Añadir los segundos al formato de hora
+                    String horaCompleta = actualizarCitaDto.getHoraCita() + ":00";
+                    Time horaCita = Time.valueOf(horaCompleta);
+                    cita.setHoraCita(horaCita);
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Formato de hora inválido. Use HH:mm"));
+                }
+            }
+
+            // Actualizar fecha si se proporciona
+            if (actualizarCitaDto.getFechaCita() != null) {
+                cita.setFechaCita(actualizarCitaDto.getFechaCita());
+            }
+
+            // Guardar los cambios
+            Cita citaActualizada = citaRepository.save(cita);
+
+            return ResponseEntity.ok()
+                .body(Map.of(
+                    "mensaje", "Cita actualizada exitosamente",
+                    "citaId", citaActualizada.getId()
+                ));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Error al actualizar la cita: " + e.getMessage()));
+        }
     }
 }
