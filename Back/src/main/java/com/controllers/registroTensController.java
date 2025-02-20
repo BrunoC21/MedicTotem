@@ -1,6 +1,7 @@
 package com.controllers;
 
-import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
@@ -45,6 +46,10 @@ public class registroTensController {
         Ticket ticket = ticketRepository.findById(ticketId)
             .orElseThrow(() -> new RuntimeException("Ticket no encontrado"));
 
+            
+        ZoneId zonaChile = ZoneId.of("America/Santiago");
+        ZonedDateTime ahora = ZonedDateTime.now(zonaChile);
+
         // Crear nuevo registro
         User rellenarUser = user.get();
 
@@ -52,7 +57,7 @@ public class registroTensController {
         registro.setTicket(ticket);
         registro.setNombre(rellenarUser.getNombre() + " " + rellenarUser.getApellido());
         registro.setRut(rellenarUser.getRut());
-        registro.setHoraInicio(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+        registro.setHoraInicio(ahora.toLocalTime().truncatedTo(ChronoUnit.SECONDS));
 
         registroTensRepository.save(registro);
 
@@ -69,10 +74,13 @@ public class registroTensController {
         
         // Buscar registro por rut del usuario
         Optional<registroTens> registro = registroTensRepository.findByRut(user.get().getRut());
-    
+        
+        ZoneId zonaChile = ZoneId.of("America/Santiago");
+        ZonedDateTime ahora = ZonedDateTime.now(zonaChile);
+
         // Actualizar hora de término
         registroTens registroActualizar = registro.get();
-        registroActualizar.setHoraTermino(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+        registroActualizar.setHoraTermino(ahora.toLocalTime().truncatedTo(ChronoUnit.SECONDS));
         
         registroTensRepository.save(registroActualizar);
 

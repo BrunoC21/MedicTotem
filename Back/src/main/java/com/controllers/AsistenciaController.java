@@ -1,7 +1,8 @@
 package com.controllers;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -46,12 +47,15 @@ public class AsistenciaController {
         Long profesionalId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
         Optional<User> userOptional = userRepository.findById(profesionalId);
 
+        ZoneId zonaChile = ZoneId.of("America/Santiago");
+        ZonedDateTime ahora = ZonedDateTime.now(zonaChile);
+
         if (userOptional.isPresent()) {
             User profesional = userOptional.get();
 
             AsistenciaMedica asistencia = new AsistenciaMedica();
             asistencia.setFecha(LocalDate.now());
-            asistencia.setHoraInicio(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+            asistencia.setHoraInicio(ahora.toLocalTime().truncatedTo(ChronoUnit.SECONDS));
             asistencia.setProfesional(profesional);
 
             asistenciaRepository.save(asistencia);
@@ -68,11 +72,15 @@ public class AsistenciaController {
         
         List<AsistenciaMedica> asistencia = asistenciaRepository.findByProfesionalId(profesionalId);
         
+        
         AsistenciaMedica asistenciaReciente = asistencia.stream()
                 .max(Comparator.comparing(AsistenciaMedica::getHoraInicio))
                 .orElse(null);
 
-                asistenciaReciente.setHoraTermino(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+        ZoneId zonaChile = ZoneId.of("America/Santiago");
+        ZonedDateTime ahora = ZonedDateTime.now(zonaChile);
+
+                asistenciaReciente.setHoraTermino(ahora.toLocalTime().truncatedTo(ChronoUnit.SECONDS));
         asistenciaRepository.save(asistenciaReciente);
         return ResponseEntity.ok("Fecha de término actualizada exitosamente");
     }
