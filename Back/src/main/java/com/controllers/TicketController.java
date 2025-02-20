@@ -1,6 +1,5 @@
 package com.controllers;
 
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -172,9 +171,13 @@ public class TicketController {
     @PutMapping("/updateHoraConfirmacion/{id}")
     public ResponseEntity<Ticket> updateHoraConfirmacion(@PathVariable Long id) {
         Optional<Ticket> ticket = ticketRepository.findById(id);
+
+        ZoneId zonaChile = ZoneId.of("America/Santiago");
+        ZonedDateTime ahora = ZonedDateTime.now(zonaChile);
+
         if (ticket.isPresent()) {
             Ticket updatedTicket = ticket.get();
-            updatedTicket.setHora_confirmacion(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+            updatedTicket.setHora_confirmacion(ahora.toLocalTime().truncatedTo(ChronoUnit.SECONDS));
             ticketRepository.save(updatedTicket);
             return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
         } else {
@@ -186,9 +189,13 @@ public class TicketController {
     @PutMapping("/updateHoraLlamada/{id}")
     public ResponseEntity<Ticket> updateHoraLlamada(@PathVariable Long id) {
         Optional<Ticket> ticket = ticketRepository.findByCitaId(id);
+
+        ZoneId zonaChile = ZoneId.of("America/Santiago");
+        ZonedDateTime ahora = ZonedDateTime.now(zonaChile);
+
         if (ticket.isPresent()) {
             Ticket updatedTicket = ticket.get();
-            updatedTicket.setHora_llamada(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+            updatedTicket.setHora_llamada(ahora.toLocalTime().truncatedTo(ChronoUnit.SECONDS));
             ticketRepository.save(updatedTicket);
             return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
         } else {
@@ -200,9 +207,13 @@ public class TicketController {
     @PutMapping("/updateHoraTermino/{id}")
     public ResponseEntity<Ticket> updateHoraTermino(@PathVariable Long id) {
         Optional<Ticket> ticket = ticketRepository.findByCitaId(id);
+
+        ZoneId zonaChile = ZoneId.of("America/Santiago");
+        ZonedDateTime ahora = ZonedDateTime.now(zonaChile);
+
         if (ticket.isPresent()) {
             Ticket updatedTicket = ticket.get();
-            updatedTicket.setHora_termino(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+            updatedTicket.setHora_termino(ahora.toLocalTime().truncatedTo(ChronoUnit.SECONDS));
             ticketRepository.save(updatedTicket);
             return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
         } else {

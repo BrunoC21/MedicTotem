@@ -58,7 +58,7 @@ public class ExcelExportService {
         // Crear cabeceras
         Row headerRow = sheet.createRow(0);
         String[] columns = {
-            "ID","Especialidad", "TipoAtencion","Estado", "Fecha", "HoraConfirmacion", "HoraLlamado", "HoraTermino",
+            "ID","Intrumento", "TipoAtencion","Estado", "Fecha", "HoraConfirmacion", "HoraLlamado", "HoraTermino",
             "tiempoEsperaMedico", "duracionAtencion", "Rut", "Dv", "Nombre", "Apellido Paterno", "Apellido Materno", "Rut Profesional",
             "Nombre Profesional", "Apellido Profesional", "TENS Nombre", "TENS Rut", 
             "TENS Hora Inicio", "TENS Hora Termino", "tiempoPreparacion", "Agendador", "Sector",
@@ -153,7 +153,7 @@ public class ExcelExportService {
 
         // Crear segunda hoja para Asistencia
         Sheet sheetAsistencia = workbook.createSheet("Asistencia Medica");
-        String[] columnsCitas = {"ID", "Fecha", "HoraInicio", "HoraTermino", "RUT", "Nombre", "Apellido"};
+        String[] columnsCitas = {"ID", "Fecha", "HoraInicio", "HoraTermino", "RUT", "Nombre", "Apellido", "Instrumento"};
         
         // Ajuste de cabeceras
         Row headerRowCitas = sheetAsistencia.createRow(0);
@@ -176,6 +176,7 @@ public class ExcelExportService {
             row.createCell(4).setCellValue(asistencia.getProfesional().getRut()); 
             row.createCell(5).setCellValue(asistencia.getProfesional().getNombre());
             row.createCell(6).setCellValue(asistencia.getProfesional().getApellido()); 
+            row.createCell(6).setCellValue(asistencia.getProfesional().getInstrumento()); 
         }
         
         // Autoajustar columnas para Aistencia
