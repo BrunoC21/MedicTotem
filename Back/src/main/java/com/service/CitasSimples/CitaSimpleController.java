@@ -44,6 +44,46 @@ public class CitaSimpleController {
          
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/soloNroTicket/{tipoCita}")
+    public ResponseEntity<Integer> getSoloNroTicket(@PathVariable String tipoCita) {
+        Optional<CitaSimple> citaSimple = citaSimpleRepository.findByTipoCita(tipoCita);
+        
+        if(citaSimple.isPresent()){
+            CitaSimple cita = citaSimple.get();
+            int nroTicket = cita.getNroTicket();
+            return ResponseEntity.ok(nroTicket);
+        }
+         
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/nroActual/{tipoCita}")
+    public ResponseEntity<Integer> getNroActual(@PathVariable String tipoCita) {
+        Optional<CitaSimple> citaSimple = citaSimpleRepository.findByTipoCita(tipoCita);
+        
+        if(citaSimple.isPresent()){
+            CitaSimple cita = citaSimple.get();
+            int nroActual = cita.getNroActual();
+            return ResponseEntity.ok(nroActual);
+        }
+         
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/countNroActual/{tipoCita}")
+    public ResponseEntity<Void> countNroActual(@PathVariable String tipoCita) {
+        Optional<CitaSimple> citaSimple = citaSimpleRepository.findByTipoCita(tipoCita);
+        
+        if (citaSimple.isPresent()) {
+            CitaSimple cita = citaSimple.get();
+            cita.countNroActual();
+            citaSimpleRepository.save(cita);
+            return ResponseEntity.ok().build();
+        }
+        
+        return ResponseEntity.notFound().build();
+    }
     
 
     /*Esta funcion es para reiniciar el nroTicket todos los dias
@@ -53,6 +93,7 @@ public class CitaSimpleController {
         List<CitaSimple> CitaSimples = citaSimpleRepository.findAll();
         for (CitaSimple cita : CitaSimples) {
             cita.resetNroTicket();
+            cita.resetNroActual();
             citaSimpleRepository.save(cita);
         }
     }

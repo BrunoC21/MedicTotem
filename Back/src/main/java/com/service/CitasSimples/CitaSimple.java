@@ -21,15 +21,19 @@ public class CitaSimple {
     @Column(name = "nroTicket")
     private int nroTicket;
 
+    @Column(name = "nroActual")
+    private int nroActual;
+
 
     public CitaSimple() {
         this.nroTicket = 1;
+        this.nroActual = 0;
     }
 
-    public CitaSimple(Long id, String tipoCita) {
-        this.id = id;
+    public CitaSimple(String tipoCita) {
         this.tipoCita = tipoCita;
         this.nroTicket = 1;
+        this.nroActual = 0;
     }
 
     public Long getId() {
@@ -60,4 +64,15 @@ public class CitaSimple {
         this.nroTicket = 1;
     }
 
+    public int getNroActual() {
+        return nroActual;
+    }
+
+    public void countNroActual() {
+        this.nroActual++;
+    }
+
+    public void resetNroActual() {
+        this.nroActual = 0;
+    }
 }
